@@ -1,4 +1,4 @@
-package com.example.irchadmaintenance.data.api.models
+package com.example.irchadmaintenance.data.models
 
 import com.google.gson.annotations.SerializedName
 import java.util.Date

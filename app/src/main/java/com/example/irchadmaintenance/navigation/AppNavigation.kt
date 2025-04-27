@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.irchadmaintenance.data.SampleData
-import com.example.irchadmaintenance.data.repository.DeviceRepository
+import com.example.irchadmaintenance.repository.DeviceRepository
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
@@ -25,10 +25,9 @@ fun AppNavigation(navController: NavHostController) {
     val deviceRepository = DeviceRepository()
     val deviceViewModel = remember { DeviceViewModel(deviceRepository) }
 
-    // Load devices when the app starts
     LaunchedEffect(key1 = true) {
         try {
-            deviceViewModel.loadDevicesForUser(3) // Replace with actual user ID
+            deviceViewModel.loadDevicesForUser(3)
         } catch (e: Exception) {
             Log.e("AppNavigation", "Failed to load devices", e)
         }
@@ -40,7 +39,7 @@ fun AppNavigation(navController: NavHostController) {
     ) {
         composable(Destination.DeviceList.route) {
             DevicesScreen(
-                userId = "1", // Make sure this matches the ID you're using
+                userId = "1",
                 devices = deviceViewModel.devices,
                 onDeviceClick = { deviceId ->
                     navController.navigate(
@@ -48,7 +47,7 @@ fun AppNavigation(navController: NavHostController) {
                     )
                 },
                 navController = navController,
-                viewModel = deviceViewModel // Pass the viewModel
+                viewModel = deviceViewModel
             )
         }
 
@@ -57,7 +56,11 @@ fun AppNavigation(navController: NavHostController) {
             arguments = Destination.DeviceDetails.arguments
         ) { backStackEntry ->
             val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
-            DeviceDetailsScreen(deviceId = deviceId, navController = navController)
+            DeviceDetailsScreen(
+                deviceId = deviceId,
+                navController = navController,
+                viewModel = deviceViewModel
+            )
         }
 
         composable(

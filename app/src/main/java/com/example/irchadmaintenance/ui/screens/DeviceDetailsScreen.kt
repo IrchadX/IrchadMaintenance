@@ -2,6 +2,7 @@ package com.example.irchadmaintenance.ui.screens
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -25,19 +26,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.irchadmaintenance.data.SampleData
+import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
-import com.example.irchadmaintenance.ui.components.DeviceInfoList
 import com.example.irchadmaintenance.ui.components.DiagnosticInfo
+import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
+import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
-    val device = SampleData.devices.find { it.id == deviceId }
-    val user = UserSampleData.users.find { it.userId == device?.userId }
+fun DeviceDetailsScreen(
+    deviceId: String,
+    navController: NavController,
+    viewModel: DeviceViewModel
+) {
+    var device by remember { mutableStateOf<Device?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
     var showDiagnostics by remember { mutableStateOf(false) }
+    var diagnosticData by remember { mutableStateOf<DeviceDiagnosticApiModel?>(null) }
+    var isLoadingDiagnostic by remember { mutableStateOf(false) }
 
 
     val rotationAngle by animateFloatAsState(
@@ -46,16 +56,49 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
         label = "arrowRotation"
     )
 
+    LaunchedEffect(deviceId) {
+        try {
+            val numericId = deviceId.toIntOrNull()
+            if (numericId != null) {
+                device = viewModel.loadDeviceById(numericId)
+            }
+        } catch (e: Exception) {
+            Log.e("DeviceDetailsScreen", "Failed to load device details", e)
+        } finally {
+            isLoading = false
+        }
+    }
+
+    suspend fun runDiagnostic() {
+        isLoadingDiagnostic = true
+        try {
+            val numericId = deviceId.toIntOrNull()
+            if (numericId != null) {
+                diagnosticData = viewModel.runDiagnostic(numericId)
+            }
+        } catch (e: Exception) {
+            Log.e("DeviceDetailsScreen", "Failed to run diagnostic", e)
+        } finally {
+            isLoadingDiagnostic = false
+        }
+    }
+
     Column {
         AppHeader(
-            user = user,
+            user = UserSampleData.users.find { it.userId == device?.userId },
             navController = navController,
             title = "Dispositifs",
             false,
             false
         )
 
-        if (device != null) {
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (device != null) {
+            val currentDevice = device!!
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -69,7 +112,7 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
                         .padding(horizontal = 50.dp)
                 ) {
                     val context = LocalContext.current
-                    device.imageUrl?.let { drawableName ->
+                    currentDevice.imageUrl?.let { drawableName ->
                         val imageResId = remember(drawableName) {
                             context.resources.getIdentifier(drawableName, "drawable", context.packageName)
                         }
@@ -77,7 +120,7 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
                         if (imageResId != 0) {
                             Image(
                                 painter = painterResource(id = imageResId),
-                                contentDescription = device.name,
+                                contentDescription = currentDevice.name,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(224.dp)
@@ -90,19 +133,19 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = device.name,
+                        text = currentDevice.name,
                         fontSize = 22.3.sp,
                         color = Color(0xFF17252A),
                         fontWeight = FontWeight.Medium
                     )
                 }
 
-                Spacer(modifier = Modifier.height(54.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                DeviceInfoList(deviceId)
 
-                Spacer(modifier = Modifier.height(105.dp))
+                DeviceDetailsInfo(currentDevice)
 
+                Spacer(modifier = Modifier.height(48.dp))
 
                 Button(
                     onClick = { showDiagnostics = !showDiagnostics },
@@ -134,14 +177,33 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
-                    DiagnosticInfo(
-                        onRefresh = {
-                            showDiagnostics = false
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                showDiagnostics = true
-                            }, 100)
+                    LaunchedEffect(showDiagnostics) {
+                        if (showDiagnostics && diagnosticData == null) {
+                            runDiagnostic()
                         }
-                    )
+                    }
+
+                    if (isLoadingDiagnostic) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        DiagnosticInfo(
+                            diagnosticData = diagnosticData,
+                            onRefresh = {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    viewModel.viewModelScope.launch {
+                                        runDiagnostic()
+                                    }
+                                }, 100)
+                            }
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -149,7 +211,7 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
                 Button(
                     onClick = {
                         navController.navigate(
-                            Destination.Interventions.createRoute(device.userId)
+                            Destination.Interventions.createRoute(currentDevice.userId)
                         )
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -171,6 +233,53 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
 
                 Spacer(modifier = Modifier.height(40.dp))
             }
+        } else {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Dispositif non trouvé", fontSize = 18.sp)
+            }
         }
     }
+}
+
+@Composable
+fun DeviceDetailsInfo(device: Device) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            DeviceInfoRow("Type", device.type)
+            DeviceInfoRow("Statut", device.status)
+            DeviceInfoRow("Adresse MAC", device.macAddress ?: "Non disponible")
+            DeviceInfoRow("Version du logiciel", device.softwareVersion ?: "Non disponible")
+            DeviceInfoRow("Date d'activation", device.activationDate)
+            DeviceInfoRow("Location", device.location)
+        }
+    }
+}
+
+@Composable
+fun DeviceInfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.Medium,
+            color = Color(0xFF17252A)
+        )
+        Text(
+            text = value,
+            color = Color(0xFF3AAFA9)
+        )
+    }
+    Divider(
+        modifier = Modifier.padding(vertical = 6.dp),
+        color = Color(0xFFDEF2F1)
+    )
 }

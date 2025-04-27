@@ -1,9 +1,9 @@
-package com.example.irchadmaintenance.data.api
+package com.example.irchadmaintenance.api
 
-import com.example.irchadmaintenance.data.api.models.CreateDeviceDto
-import com.example.irchadmaintenance.data.api.models.DeviceApiModel
-import com.example.irchadmaintenance.data.api.models.DeviceDiagnosticApiModel
-import com.example.irchadmaintenance.data.api.models.UpdateDeviceDto
+import com.example.irchadmaintenance.data.models.CreateDeviceDto
+import com.example.irchadmaintenance.data.models.DeviceApiModel
+import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
+import com.example.irchadmaintenance.data.models.UpdateDeviceDto
 import retrofit2.Response
 import retrofit2.http.*
 

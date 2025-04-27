@@ -2,6 +2,7 @@ package com.example.irchadmaintenance.ui.components
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -24,9 +25,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.R
+import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
 
 @Composable
-fun DiagnosticInfo(onRefresh: () -> Unit) {
+fun DiagnosticInfo(
+    diagnosticData: DeviceDiagnosticApiModel?,
+    onRefresh: () -> Unit
+) {
+    // Add debug logging
+    LaunchedEffect(diagnosticData) {
+        Log.d("DiagnosticInfo", "Received diagnostic data: $diagnosticData")
+    }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -57,9 +66,10 @@ fun DiagnosticInfo(onRefresh: () -> Unit) {
             }
         }
 
-        val batteryValue = "100%"
-        val tempValue = "70 °C"
-        val signalValue = "signal moyen"
+
+        val batteryValue = diagnosticData?.batteryLevel ?: "100%"
+        val tempValue = diagnosticData?.temperature ?: "70 °C"
+        val signalValue = diagnosticData?.connectivity ?: "signal moyen"
 
         DiagnosticItem(
             label = "Batterie",

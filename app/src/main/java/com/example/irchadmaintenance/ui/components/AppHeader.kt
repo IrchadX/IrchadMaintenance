@@ -80,7 +80,6 @@ fun AppHeader(user: User?, navController: NavController, title: String, default:
         }
     }
 }
-
 @Composable
 fun AppHeaderCore(user: User?, navController: NavController, title: String, default: Boolean, warning: Boolean) {
     var showBackConfirmationDialog by remember { mutableStateOf(false) }
@@ -119,12 +118,30 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
             verticalAlignment = Alignment.CenterVertically
         ) {
             val context = LocalContext.current
-            user?.profilePicUrl.let { drawableName ->
-                val imageResId = remember(drawableName) {
-                    context.resources.getIdentifier(drawableName, "drawable", context.packageName)
+
+            // Fixed code for profile image
+            if (user?.profilePicUrl != null) {
+                val imageResId = remember(user.profilePicUrl) {
+                    context.resources.getIdentifier(user.profilePicUrl, "drawable", context.packageName)
                 }
 
                 if (imageResId != 0) {
+                    Image(
+                        painter = painterResource(id = imageResId),
+                        contentDescription = "User profile picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .clickable {
+                                navController.navigate(
+                                    Destination.UserProfile.createRoute(user.userId.toString())
+                                )
+                            }
+                    )
+                } else {
+                    // Fallback if resource not found but URL exists
                     Image(
                         painter = painterResource(id = R.drawable.user),
                         contentDescription = "User profile picture",
@@ -135,11 +152,29 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                             .background(Color.White)
                             .clickable {
                                 navController.navigate(
-                                    Destination.UserProfile.createRoute(user?.userId.toString())
+                                    Destination.UserProfile.createRoute(user.userId.toString())
                                 )
                             }
                     )
                 }
+            } else {
+                // Default image when no profile URL exists
+                Image(
+                    painter = painterResource(id = R.drawable.user),
+                    contentDescription = "User profile picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable {
+                            user?.userId?.let { userId ->
+                                navController.navigate(
+                                    Destination.UserProfile.createRoute(userId.toString())
+                                )
+                            }
+                        }
+                )
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -156,7 +191,7 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                     fontSize = 16.sp
                 )
                 Text(
-                    text = user?.name.toString(),
+                    text = user?.name ?: "User",
                     color = Color.Black,
                     fontSize = 16.sp
                 )
@@ -171,9 +206,11 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                     tint = Color(0xFF2B7A78),
                     modifier = Modifier
                         .clickable() {
-                            navController.navigate(
-                                Destination.Notifications.createRoute(user?.userId.toString())
-                            )
+                            user?.userId?.let { userId ->
+                                navController.navigate(
+                                    Destination.Notifications.createRoute(userId.toString())
+                                )
+                            }
                         }
                 )
                 user?.notificationCount?.let {
@@ -186,16 +223,14 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                                 .padding(horizontal = 6.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            user?.notificationCount?.let { it1 ->
-                                Text(
-                                    text = if (it1 > 99) "99+" else user.notificationCount.toString(),
-                                    color = Color.White,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.defaultMinSize(minWidth = 12.dp)
-                                )
-                            }
+                            Text(
+                                text = if (it > 99) "99+" else it.toString(),
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.defaultMinSize(minWidth = 12.dp)
+                            )
                         }
                     }
                 }
@@ -210,7 +245,6 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
         )
     }
 }
-
 @Composable
 fun CustomHeader(title: String, warning: Boolean = false, onBackClick: () -> Unit) {
     Card(

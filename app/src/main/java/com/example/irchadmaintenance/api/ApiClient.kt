@@ -1,4 +1,4 @@
-package com.example.irchadmaintenance.data.api
+package com.example.irchadmaintenance.api
 
 import android.util.Log
 import com.google.gson.GsonBuilder
@@ -43,7 +43,7 @@ object ApiClient {
         .build()
 
     private val gson = GsonBuilder()
-        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") // Note the quotes around 'Z'
+        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         .registerTypeAdapter(Date::class.java, object : JsonDeserializer<Date> {
             override fun deserialize(
                 json: JsonElement,
@@ -60,7 +60,7 @@ object ApiClient {
                     try {
                         return SimpleDateFormat(format, Locale.getDefault()).parse(json.asString)
                     } catch (e: Exception) {
-                        // Try next format
+
                     }
                 }
                 Log.e("ApiClient", "Failed to parse date: ${json.asString}")

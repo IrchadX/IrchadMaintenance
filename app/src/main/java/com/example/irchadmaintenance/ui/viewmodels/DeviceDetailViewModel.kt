@@ -1,10 +1,11 @@
 package com.example.irchadmaintenance.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.irchadmaintenance.data.Device
-import com.example.irchadmaintenance.data.api.models.DeviceDiagnosticApiModel
-import com.example.irchadmaintenance.data.repository.DeviceRepository
+import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
+import com.example.irchadmaintenance.repository.DeviceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,18 +39,40 @@ class DeviceDetailViewModel : ViewModel() {
             }
         }
     }
+    suspend fun runDiagnostic(id: Int): DeviceDiagnosticApiModel? {
+        try {
+            val response = repository.runDiagnostic(id)
+            Log.d("DeviceViewModel", "Raw diagnostic response: $response")
+            Log.d("DeviceViewModel", "commState: ${response.commState}, connectionState: ${response.connectionState}")
+            Log.d("DeviceViewModel", "Connectivity result: ${determineConnectivityStatus(response.commState ?: false, response.connectionState ?: false)}")
 
-    fun runDiagnostic(deviceId: Int) {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                _error.value = null
-                _diagnostic.value = repository.runDiagnostic(deviceId)
-            } catch (e: Exception) {
-                _error.value = e.message ?: "Failed to run diagnostic"
-            } finally {
-                _isLoading.value = false
+            // Vérifiez que tous les champs requis sont présents
+            if (response.macAddress == null) {
+                Log.w("DeviceViewModel", "Diagnostic response has null macAddress")
             }
+
+            return DeviceDiagnosticApiModel(
+                id = response.id,
+                batteryLevel = response.batteryLevel?.replace("%", "") + "%" ?: "0%", // Protégez contre les nulls
+                temperature = response.temperature ?: "35 °C",
+                connectivity = determineConnectivityStatus(response.commState ?: false, response.connectionState ?: false),
+                macAddress = response.macAddress ?: "Non disponible",
+                softwareVersion = response.softwareVersion ?: "Non disponible",
+                commState = response.commState ?: false,
+                connectionState = response.connectionState ?: false
+            )
+        } catch (e: Exception) {
+            Log.e("DeviceViewModel", "Error running diagnostic for device $id", e)
+            return null
         }
     }
+
+    private fun determineConnectivityStatus(commState: Boolean, connectionState: Boolean): String {
+        return when {
+            commState && connectionState -> "bon réseau"
+            connectionState -> "signal moyen"
+            else -> "faible signal"
+        }
+    }
+
 }

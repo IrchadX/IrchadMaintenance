@@ -1,4 +1,4 @@
-package com.example.irchadmaintenance.data.api.models
+package com.example.irchadmaintenance.data.models
 
 data class StateTypeApiModel(
     val id: Int,
