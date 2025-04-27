@@ -56,6 +56,23 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    // ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Retrofit for API calls
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    implementation (libs.threetenabp)
+
+// OkHttp for logging and intercepting network requests
+    implementation (libs.okhttp3.okhttp)
+    implementation (libs.okhttp3.logging.interceptor.v4100)
+// Coroutines for async operations
+    implementation (libs.kotlinx.coroutines.android)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.runtime.livedata)
+
 }

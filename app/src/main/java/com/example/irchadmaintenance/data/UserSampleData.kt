@@ -1,9 +1,8 @@
 package com.example.irchadmaintenance.data
-
 object UserSampleData {
     val users = listOf(
         User(
-            userId = "user001",
+            userId = "3",
             name = "Akram Haddadou",
             profilePicUrl = "device",
             notificationCount = 5

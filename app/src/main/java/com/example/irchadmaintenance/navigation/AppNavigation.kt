@@ -1,38 +1,54 @@
-
 package com.example.irchadmaintenance.navigation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.irchadmaintenance.data.SampleData
+import com.example.irchadmaintenance.data.repository.DeviceRepository
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.UserProfileScreen
+import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation(navController: NavHostController) {
+    val deviceRepository = DeviceRepository()
+    val deviceViewModel = remember { DeviceViewModel(deviceRepository) }
+
+    // Load devices when the app starts
+    LaunchedEffect(key1 = true) {
+        try {
+            deviceViewModel.loadDevicesForUser(3) // Replace with actual user ID
+        } catch (e: Exception) {
+            Log.e("AppNavigation", "Failed to load devices", e)
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Destination.DeviceList.route
     ) {
-
         composable(Destination.DeviceList.route) {
             DevicesScreen(
-                userId = "user001",
-                devices = SampleData.devices,
+                userId = "1", // Make sure this matches the ID you're using
+                devices = deviceViewModel.devices,
                 onDeviceClick = { deviceId ->
                     navController.navigate(
                         Destination.DeviceDetails.createRoute(deviceId)
                     )
                 },
-                navController = navController
+                navController = navController,
+                viewModel = deviceViewModel // Pass the viewModel
             )
         }
 

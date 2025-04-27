@@ -1,32 +1,41 @@
 package com.example.irchadmaintenance.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
+import com.example.irchadmaintenance.data.User
 import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.data.UserSampleData.users
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.components.StatusFilterButton
+import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
 
 @Composable
 fun DevicesScreen(
-    userId : String,
+    userId: String,
     devices: List<Device>,
     onDeviceClick: (String) -> Unit,
-    navController: NavController
+    navController: NavController,
+    viewModel: DeviceViewModel // Add this parameter
 ) {
-
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf<String?>(null) }
 
-    val filteredDevices = devices.filter { device ->
+    // Get the loading and error states
+    val isLoading = viewModel.isLoading.value
+    val error = viewModel.error.value
 
+    val filteredDevices = devices.filter { device ->
         val matchesSearch = device.name.contains(searchQuery, ignoreCase = true) ||
                 device.id.contains(searchQuery, ignoreCase = true) ||
                 device.status.contains(searchQuery, ignoreCase = true) ||
@@ -37,45 +46,74 @@ fun DevicesScreen(
         matchesSearch && matchesStatus
     }
 
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val user = UserSampleData.users.find { it.userId == userId }
-        AppHeader(
-            user,
-            navController,
-            "",
-            true,
-            false
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Get user from your data source - make sure this can't return null
+        val user = UserSampleData.users.find { it.userId == userId } ?: User(
+            userId = userId,
+            name = "Unknown User",
+            profilePicUrl = "user", // default profile picture
+            notificationCount = 0
         )
 
-        Spacer(modifier = Modifier.height(15.dp))
+        AppHeader(
+            user = user,
+            navController = navController,
+            title = "",
+            default = true,
+            warning = false
+        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Recherche...") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            StatusFilterButton(
-                selectedStatus = selectedStatus,
-                onStatusSelected = { status ->
-                    selectedStatus = status
+        // Add this to show loading and error states
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (error != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Error: $error", color = MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { viewModel.loadDevicesForUser(userId.toIntOrNull() ?: 1) }) {
+                        Text("Retry")
+                    }
                 }
-            )
+            }
+        } else {
+            // Rest of your UI
+            Spacer(modifier = Modifier.height(15.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Recherche...") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                StatusFilterButton(
+                    selectedStatus = selectedStatus,
+                    onStatusSelected = { status ->
+                        selectedStatus = status
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Add this to show when there are no devices
+            if (filteredDevices.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No devices found")
+                }
+            } else {
+                DeviceList(devices = filteredDevices, onDeviceClick = onDeviceClick)
+            }
         }
-
-        DeviceList(devices = filteredDevices, onDeviceClick = onDeviceClick)
     }
 }

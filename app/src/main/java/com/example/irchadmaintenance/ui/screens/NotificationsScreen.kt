@@ -1,3 +1,4 @@
+
 package com.example.irchadmaintenance.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -30,16 +31,16 @@ fun NotificationsScreen(
 
     val userDevices = SampleData.devices.filter { it.userId == userId }
 
-   Column (
-       modifier = Modifier
-           .fillMaxSize()
-   ){
-       AppHeader(
-           user = user,
-           navController = navController,
-           title = "Alertes",
-           default = false,
-           warning = false
-       )
-   }
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+    ){
+        AppHeader(
+            user = user,
+            navController = navController,
+            title = "Alertes",
+            default = false,
+            warning = false
+        )
+    }
 }

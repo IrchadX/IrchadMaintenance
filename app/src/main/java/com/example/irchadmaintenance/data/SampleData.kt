@@ -1,5 +1,4 @@
 package com.example.irchadmaintenance.data
-
 object SampleData {
     val devices = listOf(
         Device(
