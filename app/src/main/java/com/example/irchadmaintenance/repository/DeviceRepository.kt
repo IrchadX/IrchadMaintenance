@@ -102,25 +102,22 @@ class DeviceRepository {
             status = this.stateType?.state ?: "Unknown",
             location = "Location data not available",
             distance = 0f,
-            imageUrl = null,
             type = this.deviceType?.type ?: "Unknown Type",
             userId = this.userId?.toString() ?: "",
             macAddress = this.macAddress,
             softwareVersion = this.softwareVersion,
-            activationDate = activationDate
+            activationDate = activationDate,
+            imageName = this.imageName ?: "device_default"
         )
     }
+
 
     fun mapDatabaseResultToDiagnosticModel(dbResult: DeviceDiagnosticApiModel): DeviceDiagnosticApiModel {
 
         val batteryPercentage = "${dbResult.batteryLevel}%"
 
 
-        val connectivityStatus = when {
-            dbResult.commState && dbResult.connectionState -> "bon réseau"
-            dbResult.connectionState -> "signal moyen"
-            else -> "faible signal"
-        }
+        val connectivityStatus = dbResult.connectivity
 
         val temperature = "35 °C"
 
@@ -132,7 +129,7 @@ class DeviceRepository {
             macAddress = dbResult.macAddress,
             softwareVersion = dbResult.softwareVersion,
             commState = dbResult.commState,
-            connectionState = dbResult.connectionState
+
         )
     }
 }

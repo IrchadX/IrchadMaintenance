@@ -112,7 +112,7 @@ fun DeviceDetailsScreen(
                         .padding(horizontal = 50.dp)
                 ) {
                     val context = LocalContext.current
-                    currentDevice.imageUrl?.let { drawableName ->
+                    currentDevice.imageName?.let { drawableName ->
                         val imageResId = remember(drawableName) {
                             context.resources.getIdentifier(drawableName, "drawable", context.packageName)
                         }

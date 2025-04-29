@@ -43,8 +43,8 @@ class DeviceDetailViewModel : ViewModel() {
         try {
             val response = repository.runDiagnostic(id)
             Log.d("DeviceViewModel", "Raw diagnostic response: $response")
-            Log.d("DeviceViewModel", "commState: ${response.commState}, connectionState: ${response.connectionState}")
-            Log.d("DeviceViewModel", "Connectivity result: ${determineConnectivityStatus(response.commState ?: false, response.connectionState ?: false)}")
+            //Log.d("DeviceViewModel", "commState: ${response.commState}, connectionState: ${response.connectionState}")
+            Log.d("DeviceViewModel", "Connectivity result: $response.connectionState )")
 
             // Vérifiez que tous les champs requis sont présents
             if (response.macAddress == null) {
@@ -55,11 +55,11 @@ class DeviceDetailViewModel : ViewModel() {
                 id = response.id,
                 batteryLevel = response.batteryLevel?.replace("%", "") + "%" ?: "0%", // Protégez contre les nulls
                 temperature = response.temperature ?: "35 °C",
-                connectivity = determineConnectivityStatus(response.commState ?: false, response.connectionState ?: false),
+                connectivity = response.connectivity ,
                 macAddress = response.macAddress ?: "Non disponible",
                 softwareVersion = response.softwareVersion ?: "Non disponible",
                 commState = response.commState ?: false,
-                connectionState = response.connectionState ?: false
+
             )
         } catch (e: Exception) {
             Log.e("DeviceViewModel", "Error running diagnostic for device $id", e)
@@ -67,12 +67,6 @@ class DeviceDetailViewModel : ViewModel() {
         }
     }
 
-    private fun determineConnectivityStatus(commState: Boolean, connectionState: Boolean): String {
-        return when {
-            commState && connectionState -> "bon réseau"
-            connectionState -> "signal moyen"
-            else -> "faible signal"
-        }
-    }
+
 
 }

@@ -7,6 +7,6 @@ data class DeviceDiagnosticApiModel(
     val connectivity: String,
     val macAddress: String?,
     val softwareVersion: String,
-    val commState: Boolean,
-    val connectionState: Boolean
+    val commState: Boolean=true,
+
 )

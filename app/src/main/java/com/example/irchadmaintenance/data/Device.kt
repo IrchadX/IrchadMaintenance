@@ -5,7 +5,7 @@ data class Device(
     val status : String,
     val location : String,
     val distance : Float,
-    val imageUrl : String? = null,
+    val imageName : String,
     val type : String,
     val userId : String,
     val macAddress : String,

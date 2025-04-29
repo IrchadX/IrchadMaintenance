@@ -17,5 +17,8 @@ data class DeviceApiModel(
     val price: Double?,
     @SerializedName("device_type") val deviceType: DeviceTypeApiModel?,
     @SerializedName("state_type") val stateType: StateTypeApiModel?,
-    @SerializedName("user") val user: UserApiModel?
+    @SerializedName("user") val user: UserApiModel?,
+
+    @SerializedName("img_url") val imageName: String ,
+
 )
