@@ -39,7 +39,7 @@ fun AppNavigation(navController: NavHostController) {
     ) {
         composable(Destination.DeviceList.route) {
             DevicesScreen(
-                userId = "1",
+                userId = "3",
                 devices = deviceViewModel.devices,
                 onDeviceClick = { deviceId ->
                     navController.navigate(

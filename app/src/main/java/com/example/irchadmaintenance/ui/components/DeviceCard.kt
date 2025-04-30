@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.R
 import com.example.irchadmaintenance.data.Device
+import com.example.irchadmaintenance.navigation.Destination
 
 @Composable
 fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (String) -> Unit) {
@@ -109,8 +111,8 @@ fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (Stri
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Device image
-                val context = LocalContext.current
-                device.imageName?.let { drawableName ->
+               /* val context = LocalContext.current
+                device.imageName.let { drawableName ->
                     val imageResId = remember(drawableName) {
                         context.resources.getIdentifier(drawableName, "drawable", context.packageName)
                     }
@@ -125,8 +127,29 @@ fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (Stri
                                 .clip(RoundedCornerShape(4.dp)),
                             contentScale = ContentScale.Fit
                         )
+                    }else {
+                        Text(text="imafe does not existe")
                     }
+                }*/val context = LocalContext.current
+                val imageId = remember(device.imageName) {
+                    context.resources.getIdentifier(device.imageName, "drawable", context.packageName)
                 }
+               // Text(text=device.imageName)
+                if (imageId != 0) {
+                    Image(
+                        painter = painterResource(id = imageId),
+                        contentDescription = "User profile picture"
+                    )
+                } else {
+                    // Image par défaut si introuvable
+                    Image(
+                        painter = painterResource(id = R.drawable.device),
+                        contentDescription = "Default image"
+
+                    )
+                }
+
+
             }
         }
     }

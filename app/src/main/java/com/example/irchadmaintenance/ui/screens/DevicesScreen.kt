@@ -1,12 +1,22 @@
 package com.example.irchadmaintenance.ui.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,7 +24,6 @@ import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.User
 import com.example.irchadmaintenance.data.UserSampleData
-import com.example.irchadmaintenance.data.UserSampleData.users
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.components.StatusFilterButton
@@ -26,7 +35,7 @@ fun DevicesScreen(
     devices: List<Device>,
     onDeviceClick: (String) -> Unit,
     navController: NavController,
-    viewModel: DeviceViewModel // Add this parameter
+    viewModel: DeviceViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf<String?>(null) }
@@ -52,7 +61,7 @@ fun DevicesScreen(
             userId = userId,
             name = "Unknown User",
             profilePicUrl = "user", // default profile picture
-            notificationCount = 0
+            notificationCount = 5
         )
 
         AppHeader(
