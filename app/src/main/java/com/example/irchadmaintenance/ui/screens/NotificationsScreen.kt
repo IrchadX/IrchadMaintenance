@@ -1,45 +1,146 @@
 package com.example.irchadmaintenance.ui.screens
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.irchadmaintenance.data.Device
+import com.example.irchadmaintenance.data.Notification
+import com.example.irchadmaintenance.data.NotificationSampleData
+import com.example.irchadmaintenance.data.NotificationSeverity
 import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.data.UserSampleData
+import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
+import com.example.irchadmaintenance.ui.components.NotificationsList
+import com.example.irchadmaintenance.viewmodels.NotificationsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsScreen(
     userId: String,
-    navController: NavController
+ //   alerts: List<Notification>,
+    navController: NavController,
+    viewModel: NotificationsViewModel = viewModel()
 ) {
     val user = UserSampleData.users.find { it.userId == userId }
 
-    val userDevices = SampleData.devices.filter { it.userId == userId }
+    val notifications = viewModel.notifications
 
-   Column (
-       modifier = Modifier
-           .fillMaxSize()
-   ){
-       AppHeader(
-           user = user,
-           navController = navController,
-           title = "Alertes",
-           default = false,
-           warning = false
-       )
-   }
+    var selectedTab by remember { mutableStateOf(0) }
+    val unreadCount = notifications.count { !it.isRead }
+
+
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AppHeader(
+            user = user,
+            navController = navController,
+            title = "Alertes",
+            default = false,
+            warning = false
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Tout marquer comme lu",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF2E70E8),
+                modifier = Modifier.clickable {
+                    viewModel.markAllAsRead()
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { selectedTab = 0 }
+            ) {
+                Text(
+                    text = "Toutes ${notifications.size}",
+                    fontSize = 14.sp,
+                    fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal,
+                    color = if (selectedTab == 0) Color(0xFF2B7A78) else Color(0xFF64748B),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .background(
+                            if (selectedTab == 0) Color(0xFF2B7A78) else Color.Transparent
+                        )
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { selectedTab = 1 }
+            ) {
+                Text(
+                    text = "Non lues $unreadCount",
+                    fontSize = 14.sp,
+                    fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
+                    color = if (selectedTab == 1) Color(0xFF2B7A78) else Color(0xFF64748B),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .background(
+                            if (selectedTab == 1) Color(0xFF2B7A78) else Color.Transparent
+                        )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        NotificationsList(
+            notifications = notifications,
+            showOnlyUnread = selectedTab == 1,
+            onNotificationClick = { notification ->
+                viewModel.markAsRead(notification.id)
+                navController.navigate(
+                    Destination.NotificationDetails.createRoute(userId, notification.id, notification.deviceId)
+                )
+            }
+        )
+    }
 }

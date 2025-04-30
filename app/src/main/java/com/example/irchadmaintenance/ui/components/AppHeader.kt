@@ -165,39 +165,55 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
             Box(
                 contentAlignment = Alignment.BottomEnd
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.notification_icon),
-                    contentDescription = "Notifications icon",
-                    tint = Color(0xFF2B7A78),
-                    modifier = Modifier
-                        .clickable() {
-                            navController.navigate(
-                                Destination.Notifications.createRoute(user?.userId.toString())
-                            )
-                        }
-                )
-                user?.notificationCount?.let {
-                    if (it > 0) {
-                        Box(
-                            modifier = Modifier
-                                .offset(x = 4.dp, y = 6.dp)
-                                .wrapContentSize()
-                                .background(Color(0xFFFF0101), shape = CircleShape)
-                                .padding(horizontal = 6.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            user?.notificationCount?.let { it1 ->
-                                Text(
-                                    text = if (it1 > 99) "99+" else user.notificationCount.toString(),
-                                    color = Color.White,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.defaultMinSize(minWidth = 12.dp)
+                if (title != "Alertes") {
+
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.notification_icon),
+                        contentDescription = "Notifications icon",
+                        tint = Color(0xFF2B7A78),
+                        modifier = Modifier
+                            .clickable() {
+                                navController.navigate(
+                                    Destination.Notifications.createRoute(user?.userId.toString())
                                 )
+                            }
+                    )
+                    user?.notificationCount?.let {
+                        if (it > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .offset(x = 4.dp, y = 6.dp)
+                                    .wrapContentSize()
+                                    .background(Color(0xFFFF0101), shape = CircleShape)
+                                    .padding(horizontal = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                user?.notificationCount?.let { it1 ->
+                                    Text(
+                                        text = if (it1 > 99) "99+" else user.notificationCount.toString(),
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.defaultMinSize(minWidth = 12.dp)
+                                    )
+                                }
                             }
                         }
                     }
+
+
+                }
+
+                else {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.notif),
+                        contentDescription = "Notifications icon - active",
+                        modifier = Modifier.size(46.dp)
+                    )
+
                 }
             }
         }

@@ -11,5 +11,7 @@ data class Device(
     val userId : String,
     val macAddress : String,
     val softwareVersion : String,
-    val activationDate : String
+    val activationDate : String,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )

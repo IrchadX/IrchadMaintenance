@@ -34,9 +34,9 @@ import com.example.irchadmaintenance.ui.components.DeviceInfoList
 import com.example.irchadmaintenance.ui.components.DiagnosticInfo
 
 @Composable
-fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
+fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavController) {
     val device = SampleData.devices.find { it.id == deviceId }
-    val user = UserSampleData.users.find { it.userId == device?.userId }
+    val user = UserSampleData.users.find { it.userId == userId }
     var showDiagnostics by remember { mutableStateOf(false) }
 
 
@@ -149,7 +149,7 @@ fun DeviceDetailsScreen(deviceId: String, navController: NavController) {
                 Button(
                     onClick = {
                         navController.navigate(
-                            Destination.Interventions.createRoute(device.userId)
+                            Destination.Interventions.createRoute(userId, deviceId)
                         )
                     },
                     colors = ButtonDefaults.buttonColors(
