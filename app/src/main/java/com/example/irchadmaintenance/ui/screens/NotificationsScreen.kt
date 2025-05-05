@@ -19,9 +19,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.Notification
-import com.example.irchadmaintenance.data.NotificationSampleData
-import com.example.irchadmaintenance.data.NotificationSeverity
-import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
@@ -40,7 +37,7 @@ fun NotificationsScreen(
     val notifications = viewModel.notifications
 
     var selectedTab by remember { mutableStateOf(0) }
-    val unreadCount = notifications.count { !it.isRead }
+    val unHandledCount = notifications.count { !it.isHandled }
 
 
 
@@ -56,26 +53,6 @@ fun NotificationsScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Tout marquer comme lu",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF2E70E8),
-                modifier = Modifier.clickable {
-                    viewModel.markAllAsRead()
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier
@@ -111,7 +88,7 @@ fun NotificationsScreen(
                     .clickable { selectedTab = 1 }
             ) {
                 Text(
-                    text = "Non lues $unreadCount",
+                    text = "Non gérées $unHandledCount",
                     fontSize = 14.sp,
                     fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal,
                     color = if (selectedTab == 1) Color(0xFF2B7A78) else Color(0xFF64748B),
@@ -136,7 +113,6 @@ fun NotificationsScreen(
             notifications = notifications,
             showOnlyUnread = selectedTab == 1,
             onNotificationClick = { notification ->
-                viewModel.markAsRead(notification.id)
                 navController.navigate(
                     Destination.NotificationDetails.createRoute(userId, notification.id, notification.deviceId)
                 )

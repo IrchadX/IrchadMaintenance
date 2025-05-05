@@ -34,7 +34,7 @@ import com.example.irchadmaintenance.ui.components.DeviceInfoList
 import com.example.irchadmaintenance.ui.components.DiagnosticInfo
 
 @Composable
-fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavController) {
+fun DeviceDetailsScreen(userId : String, deviceId: Int, navController: NavController) {
     val device = SampleData.devices.find { it.id == deviceId }
     val user = UserSampleData.users.find { it.userId == userId }
     var showDiagnostics by remember { mutableStateOf(false) }
@@ -68,24 +68,6 @@ fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavCon
                         .fillMaxWidth()
                         .padding(horizontal = 50.dp)
                 ) {
-                    val context = LocalContext.current
-                    device.imageUrl?.let { drawableName ->
-                        val imageResId = remember(drawableName) {
-                            context.resources.getIdentifier(drawableName, "drawable", context.packageName)
-                        }
-
-                        if (imageResId != 0) {
-                            Image(
-                                painter = painterResource(id = imageResId),
-                                contentDescription = device.name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(224.dp)
-                                    .clip(RoundedCornerShape(6.dp)),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -134,7 +116,9 @@ fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavCon
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut()
                 ) {
-                    DiagnosticInfo(
+                    DiagnosticInfo( batteryValue = device.battery,
+                        tempValue = device.temperature,
+                        signalValue = device.signal,
                         onRefresh = {
                             showDiagnostics = false
                             Handler(Looper.getMainLooper()).postDelayed({

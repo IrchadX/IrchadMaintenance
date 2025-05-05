@@ -37,9 +37,9 @@ import com.example.irchadmaintenance.ui.components.OSMDroidMap
 
 @Composable
 fun NotificationDetailsScreen(
-    notificationId: String,
+    notificationId: Int,
     userId: String,
-    deviceId: String,
+    deviceId: Int,
     navController: NavController
 ) {
     val viewModel: NotificationsViewModel = viewModel()
@@ -71,15 +71,9 @@ fun NotificationDetailsScreen(
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Map component with device location
-                OSMDroidMap(
-                    location = device?.location ?: "Pas de localisation",
-                    latitude = device?.latitude ?: 0.0,
-                    longitude = device?.longitude ?: 0.0
-                )
+
 
                 Spacer(modifier = Modifier.height(48.dp))
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -98,28 +92,7 @@ fun NotificationDetailsScreen(
                         )
 
                         Text(
-                            text = deviceId,
-                            fontSize = 20.sp,
-                            color = Color(0xFFAAA3A3)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(34.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "ID de l'utilisateur",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF3AAFA9)
-                        )
-
-                        Text(
-                            text = needyId,
+                            text = deviceId.toString(),
                             fontSize = 20.sp,
                             color = Color(0xFFAAA3A3)
                         )

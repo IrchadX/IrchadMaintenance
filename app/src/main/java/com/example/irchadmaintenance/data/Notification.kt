@@ -1,18 +1,15 @@
 package com.example.irchadmaintenance.data
 
 data class Notification(
-    val id: String,
-    val deviceId : String,
+    val id: Int,
+    val deviceId: Int?,
     val title: String,
     val message: String,
     val timestamp: String,
+    val zone: String,
+    val status: String,
     val alertType: String,
-    var isRead: Boolean = false,
-    val severity: NotificationSeverity = NotificationSeverity.INFO
+    var isHandled: Boolean = false,
+    val severity: String?
 )
 
-enum class NotificationSeverity {
-    INFO,
-    WARNING,
-    CRITICAL
-}

@@ -100,10 +100,6 @@ fun UserProfileScreen(
                                 fontSize = 14.sp
                             )
 
-                            Text(
-                                text = "Location: ${device.location}",
-                                fontSize = 14.sp
-                            )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))

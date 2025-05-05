@@ -19,7 +19,7 @@ import com.example.irchadmaintenance.data.SampleData
 
 
 @Composable
-fun DeviceInfoList(deviceId : String) {
+fun DeviceInfoList(deviceId : Int) {
     Column (
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -37,7 +37,7 @@ fun DeviceInfoList(deviceId : String) {
                         color = Color(0xFF3AAFA9),
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp)
-                    Text(text = device.id,
+                    Text(text = device.id.toString(),
                         color = Color(0xFFAAA3A3),
                         fontSize = 20.sp)
                 }
@@ -139,7 +139,7 @@ fun DeviceInfoList(deviceId : String) {
                         color = Color(0xFF3AAFA9),
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp)
-                    Text(text = device.activationDate,
+                    Text(text = device.serviceDate,
                         color = Color(0xFFAAA3A3),
                         fontSize = 20.sp)
                 }

@@ -3,13 +3,7 @@ package com.example.irchadmaintenance.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -24,18 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.R
 import com.example.irchadmaintenance.data.Device
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-
-
 
 @Composable
-fun DeviceCard(modifier : Modifier = Modifier, device : Device, onCardClick: (String) -> Unit) {
+fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (String) -> Unit) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clickable { onCardClick(device.id) },
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clickable { onCardClick(device.id.toString()) },
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -49,12 +39,6 @@ fun DeviceCard(modifier : Modifier = Modifier, device : Device, onCardClick: (St
                 Row(
                     verticalAlignment = Alignment.Top
                 ) {
-                    Image (
-                        painter = painterResource( id = R.drawable.device_icon),
-                        contentDescription = "Device icon",
-                        modifier = Modifier.width(20.07.dp)
-                            .height(20.07.dp)
-                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = device.name,
@@ -71,57 +55,44 @@ fun DeviceCard(modifier : Modifier = Modifier, device : Device, onCardClick: (St
                     fontSize = 11.15.sp
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon (
-                        painter = painterResource( id = R.drawable.location_icon),
-                        contentDescription = "Location icon",
-                        tint = Color(0xFF2B7A78)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = device.location,
-                        color = Color.Black,
-                        fontSize = 11.15.sp
-                    )
-                }
+
                 Text(
-                    text = "${device.distance}km",
-                    color = Color(0xFF2B7A78),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 24.dp),
-                    fontSize = 8.92.sp
+                    text = "Type : ${device.type}",
+                    color = Color.Black,
+                    fontSize = 11.15.sp,
+                    modifier = Modifier.padding(start = 24.dp)
+                )
+                Text(
+                    text = "Version : ${device.softwareVersion}",
+                    color = Color.Black,
+                    fontSize = 11.15.sp,
+                    modifier = Modifier.padding(start = 24.dp)
+                )
+                Text(
+                    text = "MAC : ${device.macAddress}",
+                    color = Color.Black,
+                    fontSize = 11.15.sp,
+                    modifier = Modifier.padding(start = 24.dp)
                 )
             }
 
-            Spacer (modifier = Modifier.width(60.dp))
+            Spacer(modifier = Modifier.width(60.dp))
 
             Column(
                 horizontalAlignment = Alignment.End
             ) {
                 StatusChip(Modifier, device.status)
                 Spacer(modifier = Modifier.height(13.dp))
-                val context = LocalContext.current
-                    device.imageUrl?.let {
-                            drawableName ->
-                            val imageResId = remember(drawableName) {
-                            context.resources.getIdentifier(drawableName, "drawable", context.packageName)
-                        }
-
-                        if (imageResId != 0) {
-                            Image(
-                                painter = painterResource(id = imageResId),
-                                contentDescription = device.name,
-                                modifier = Modifier
-                                    .width(91.44.dp)
-                                    .height(63.56.dp)
-                                    .clip(RoundedCornerShape(2.23.dp)),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.device_icon),
+                    contentDescription = device.name,
+                    modifier = Modifier
+                        .width(91.44.dp)
+                        .height(63.56.dp)
+                        .clip(RoundedCornerShape(2.23.dp)),
+                    contentScale = ContentScale.Fit
+                )
             }
         }
     }
+}

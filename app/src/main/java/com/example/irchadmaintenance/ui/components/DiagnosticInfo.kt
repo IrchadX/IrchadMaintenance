@@ -26,7 +26,12 @@ import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.R
 
 @Composable
-fun DiagnosticInfo(onRefresh: () -> Unit) {
+fun DiagnosticInfo(
+    batteryValue: String,
+    tempValue: String,
+    signalValue: String,
+    onRefresh: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -57,31 +62,10 @@ fun DiagnosticInfo(onRefresh: () -> Unit) {
             }
         }
 
-        val batteryValue = "100%"
-        val tempValue = "70 °C"
-        val signalValue = "signal moyen"
 
-        DiagnosticItem(
-            label = "Batterie",
-            value = batteryValue,
-            evaluation = evaluateBattery(batteryValue)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        DiagnosticItem(
-            label = "Température",
-            value = tempValue,
-            evaluation = evaluateTemperature(tempValue)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        DiagnosticItem(
-            label = "Connectivité",
-            value = signalValue,
-            evaluation = evaluateConnectivity(signalValue)
-        )
+        DiagnosticItem("Batterie", batteryValue, evaluateBattery(batteryValue))
+        DiagnosticItem("Température", tempValue, evaluateTemperature(tempValue))
+        DiagnosticItem("Connectivité", signalValue, evaluateConnectivity(signalValue))
     }
 }
 

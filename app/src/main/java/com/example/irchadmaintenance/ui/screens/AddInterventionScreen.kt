@@ -36,7 +36,7 @@ enum class InterventionType {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InterventionScreen(userId: String, deviceId : String,  navController: NavController) {
+fun InterventionScreen(userId: String, deviceId : Int,  navController: NavController) {
     var showSuccessToast by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var title by remember { mutableStateOf("") }

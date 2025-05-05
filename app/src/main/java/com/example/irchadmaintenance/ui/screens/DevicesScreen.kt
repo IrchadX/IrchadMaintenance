@@ -9,14 +9,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.UserSampleData
-import com.example.irchadmaintenance.data.UserSampleData.users
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.components.StatusFilterButton
 
 @Composable
 fun DevicesScreen(
-    userId : String,
+    userId: String,
     devices: List<Device>,
     onDeviceClick: (String) -> Unit,
     navController: NavController
@@ -28,9 +27,8 @@ fun DevicesScreen(
     val filteredDevices = devices.filter { device ->
 
         val matchesSearch = device.name.contains(searchQuery, ignoreCase = true) ||
-                device.id.contains(searchQuery, ignoreCase = true) ||
-                device.status.contains(searchQuery, ignoreCase = true) ||
-                device.location.contains(searchQuery, ignoreCase = true)
+                device.id.toString().contains(searchQuery, ignoreCase = true) ||
+                device.status.contains(searchQuery, ignoreCase = true)
 
         val matchesStatus = selectedStatus == null || device.status == selectedStatus
 
@@ -76,6 +74,8 @@ fun DevicesScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        DeviceList(devices = filteredDevices, onDeviceClick = onDeviceClick)
+        DeviceList(devices = filteredDevices, onDeviceClick = { deviceId ->
+            onDeviceClick(deviceId)
+        })
     }
 }

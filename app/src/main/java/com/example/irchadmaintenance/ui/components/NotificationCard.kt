@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.R
 import com.example.irchadmaintenance.data.Notification
-import com.example.irchadmaintenance.data.NotificationSeverity
 
 @Composable
 fun NotificationCard(
@@ -33,16 +32,17 @@ fun NotificationCard(
     onClick: () -> Unit
 ) {
 
-    val backgroundColor = if (notification.isRead) {
+    val backgroundColor = if (notification.isHandled) {
         Color(0xFFF9F9F9)
     } else {
         Color(0x333AAFA9)
     }
 
     val indicatorColor = when (notification.severity) {
-        NotificationSeverity.CRITICAL -> Color(0xFFCC2222)
-        NotificationSeverity.WARNING -> Color(0xFFFFB800)
-        NotificationSeverity.INFO -> Color(0xFF2B7A78)
+        "Critique" -> Color(0xFFCC2222)
+        "Modéré" -> Color(0xFFFFB800)
+        "Mineur" -> Color(0xFF2B7A78)
+        else -> {Color(0xFF2B7A78)}
     }
 
 
@@ -70,7 +70,7 @@ fun NotificationCard(
                     tint = Color(0xFF2B7A78)
                 )
 
-                if (notification.severity == NotificationSeverity.CRITICAL || notification.severity == NotificationSeverity.WARNING) {
+                if (notification.severity == "Critique" || notification.severity == "Modéré") {
 
                     Box(
                         modifier = Modifier

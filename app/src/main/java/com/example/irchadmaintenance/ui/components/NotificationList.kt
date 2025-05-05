@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.irchadmaintenance.data.Notification
-import com.example.irchadmaintenance.data.NotificationSeverity
 
 @Composable
 fun NotificationsList(
@@ -21,7 +20,7 @@ fun NotificationsList(
     onNotificationClick: (Notification) -> Unit
 ) {
     val filteredNotifications = if (showOnlyUnread) {
-        notifications.filter { !it.isRead }
+        notifications.filter { !it.isHandled }
     } else {
         notifications
     }
