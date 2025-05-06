@@ -1,11 +1,14 @@
 package com.example.irchadmaintenance.viewmodels
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.irchadmaintenance.data.Notification
+import com.example.irchadmaintenance.notifications.NotificationHelper
 import com.example.irchadmaintenance.repositories.AlertRepository
+import com.example.irchadmaintenance.websocket.WebSocketManager // ⬅️ assure-toi d'avoir ce fichier
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel : ViewModel() {
@@ -15,7 +18,7 @@ class NotificationsViewModel : ViewModel() {
     private val repository = AlertRepository()
 
     init {
-        fetchNotifications()
+        fetchNotifications()               // Chargement initial // Écoute des alertes en temps réel
     }
 
     private fun fetchNotifications() {
@@ -30,6 +33,19 @@ class NotificationsViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("AlertViewModel", "Error fetching alerts", e)
             }
+        }
+    }
+
+     fun listenForRealTimeAlerts(context: Context) {
+        WebSocketManager.connect { newAlert ->
+            _notifications.add(0, newAlert)
+
+            // Afficher une notification système
+            NotificationHelper.showNotification(
+                context,
+                title = "Nouvelle alerte",
+                message = newAlert.message // ou un autre champ
+            )
         }
     }
 

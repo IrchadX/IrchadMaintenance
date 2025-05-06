@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +33,12 @@ fun NotificationsScreen(
     navController: NavController,
     viewModel: NotificationsViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val viewModel: NotificationsViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        viewModel.listenForRealTimeAlerts(context)
+    }
     val user = UserSampleData.users.find { it.userId == userId }
 
     val notifications = viewModel.notifications
