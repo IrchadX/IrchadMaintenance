@@ -3,23 +3,42 @@ package com.example.irchadmaintenance.ui.screens
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.UserSampleData
-import com.example.irchadmaintenance.ui.components.*
+import com.example.irchadmaintenance.ui.components.AppHeader
+import com.example.irchadmaintenance.ui.components.BackConfirmationDialog
+import com.example.irchadmaintenance.ui.components.FormTextField
+import com.example.irchadmaintenance.ui.components.InterventionCalendar
+import com.example.irchadmaintenance.ui.components.InterventionTypeToggle
+import com.example.irchadmaintenance.ui.components.LocationIcon
+import com.example.irchadmaintenance.ui.components.SuccessToast
+import com.example.irchadmaintenance.ui.viewmodels.InterventionViewModel
 import java.time.LocalDate
 import java.time.YearMonth
-
 
 val TealColor = Color(0xFF2AA198)
 val DarkTealColor = Color(0xFF004D40)
@@ -36,7 +55,15 @@ enum class InterventionType {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InterventionScreen(userId: String, navController: NavController) {
+fun InterventionScreen(
+    userId: String,
+    navController: NavController,
+    viewModel: InterventionViewModel
+) {
+    val isLoading by viewModel.isLoading
+    val errorMessage by viewModel.error
+    val success by viewModel.success
+
     var showSuccessToast by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var title by remember { mutableStateOf("") }
@@ -45,6 +72,14 @@ fun InterventionScreen(userId: String, navController: NavController) {
     var interventionType by remember { mutableStateOf(InterventionType.PREVENTIVE) }
     var currentYearMonth by remember { mutableStateOf(YearMonth.now()) }
     var showBackConfirmationDialog by remember { mutableStateOf(false) }
+
+    // Show success toast when intervention is created successfully
+    LaunchedEffect(success) {
+        if (success) {
+            showSuccessToast = true
+            viewModel.resetSuccess()
+        }
+    }
 
     BackHandler {
         showBackConfirmationDialog = true
@@ -131,16 +166,29 @@ fun InterventionScreen(userId: String, navController: NavController) {
 
                 Spacer(modifier = Modifier.height(22.dp))
 
+                // Show any error messages
+                if (errorMessage != null) {
+                    Text(
+                        text = errorMessage ?: "",
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
                 Button(
                     onClick = {
-                        showSuccessToast = true
+                        if (selectedDate != null && title.isNotBlank()) {
+                            viewModel.createIntervention(
+                                userId = userId.toInt(),
+                                selectedDate = selectedDate!!,
+                                title = title,
+                                location = location,
+                                description = description,
+                                interventionType = interventionType
+                            )
 
-                        selectedDate = null
-                        title = ""
-                        location = "ESI, Oued Smar, Alger"
-                        description = ""
-                        interventionType = InterventionType.PREVENTIVE
-                        currentYearMonth = YearMonth.now()
+                            // Fields will be reset on success via the LaunchedEffect
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -148,13 +196,21 @@ fun InterventionScreen(userId: String, navController: NavController) {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF17252A),
                         contentColor = WhiteColor
-                    )
+                    ),
+                    enabled = !isLoading && selectedDate != null && title.isNotBlank()
                 ) {
-                    Text(
-                        "Ajouter",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = WhiteColor,
+                            modifier = Modifier.height(24.dp)
+                        )
+                    } else {
+                        Text(
+                            "Ajouter",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(107.dp))
@@ -162,12 +218,20 @@ fun InterventionScreen(userId: String, navController: NavController) {
         }
     }
 
-
-
     if (showSuccessToast) {
         SuccessToast(
             message = "Intervention ajoutée",
-            onDismiss = { showSuccessToast = false }
+            onDismiss = {
+                showSuccessToast = false
+
+                // Reset form fields
+                selectedDate = null
+                title = ""
+                location = "ESI, Oued Smar, Alger"
+                description = ""
+                interventionType = InterventionType.PREVENTIVE
+                currentYearMonth = YearMonth.now()
+            }
         )
     }
 

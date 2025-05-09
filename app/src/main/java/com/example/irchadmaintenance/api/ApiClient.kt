@@ -16,10 +16,11 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.221.216:3000/"
+    private const val BASE_URL = "http://192.168.12.216:3000/"
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
+    //ttp://192.168.221.216:3000/
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
@@ -72,5 +73,13 @@ object ApiClient {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(DeviceApiService::class.java)
+    }
+    val interventionApiService: InterventionApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+            .create(InterventionApiService::class.java)
     }
 }

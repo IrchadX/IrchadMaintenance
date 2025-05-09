@@ -9,21 +9,24 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.repository.DeviceRepository
-import com.example.irchadmaintenance.ui.components.DeviceList
+import com.example.irchadmaintenance.repository.InterventionRepository
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.UserProfileScreen
 import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
+import com.example.irchadmaintenance.ui.viewmodels.InterventionViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation(navController: NavHostController) {
     val deviceRepository = DeviceRepository()
     val deviceViewModel = remember { DeviceViewModel(deviceRepository) }
+
+    val interventionRepository = InterventionRepository()
+    val interventionViewModel = remember { InterventionViewModel(interventionRepository) }
 
     LaunchedEffect(key1 = true) {
         try {
@@ -39,7 +42,7 @@ fun AppNavigation(navController: NavHostController) {
     ) {
         composable(Destination.DeviceList.route) {
             DevicesScreen(
-                userId = "3",
+                userId = "74",
                 devices = deviceViewModel.devices,
                 onDeviceClick = { deviceId ->
                     navController.navigate(
@@ -68,7 +71,11 @@ fun AppNavigation(navController: NavHostController) {
             arguments = Destination.Interventions.arguments
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            InterventionScreen(userId = userId, navController = navController)
+            InterventionScreen(
+                userId = userId,
+                navController = navController,
+                viewModel = interventionViewModel
+            )
         }
 
         composable(
@@ -76,7 +83,7 @@ fun AppNavigation(navController: NavHostController) {
             arguments = Destination.UserProfile.arguments
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
-            UserProfileScreen (userId = userId, navController = navController)
+            UserProfileScreen(userId = userId, navController = navController)
         }
 
         composable(

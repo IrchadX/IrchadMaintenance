@@ -92,13 +92,13 @@ fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (Stri
                 }
 
                 // Distance
-                Text(
+          /*      Text(
                     text = "${device.distance}km",
                     color = Color(0xFF2B7A78),
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(start = 32.dp),
                     fontSize = 10.sp
-                )
+                ) */
             }
 
             // Right side with status and image

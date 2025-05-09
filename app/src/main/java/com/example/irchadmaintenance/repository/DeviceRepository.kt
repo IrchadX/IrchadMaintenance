@@ -100,7 +100,7 @@ class DeviceRepository {
             id = this.id.toString(),
             name = this.deviceType?.type ?: "Unknown Device",
             status = this.stateType?.state ?: "Unknown",
-            location = "Location data not available",
+            location = "Centre Commercial Ardis, El Harrach, Alger",
             distance = 0f,
             type = this.deviceType?.type ?: "Unknown Type",
             userId = this.userId?.toString() ?: "",
