@@ -211,7 +211,7 @@ fun DeviceDetailsScreen(
                 Button(
                     onClick = {
                         navController.navigate(
-                            Destination.Interventions.createRoute(currentDevice.userId)
+                            Destination.Interventions.createRoute("74")
                         )
                     },
                     colors = ButtonDefaults.buttonColors(

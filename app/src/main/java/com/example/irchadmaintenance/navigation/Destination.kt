@@ -5,6 +5,7 @@ import androidx.navigation.navArgument
 
 sealed class Destination(val route: String) {
     object DeviceList : Destination("device_list")
+
     object DeviceDetails : Destination("device_details/{deviceId}") {
         fun createRoute(deviceId: String): String {
             return this.route.replace("{deviceId}", deviceId)
@@ -14,13 +15,15 @@ sealed class Destination(val route: String) {
             navArgument("deviceId") { type = NavType.StringType }
         )
     }
+
+    // Make sure this matches the navigation call in DeviceDetailsScreen.kt
     object Interventions : Destination("add_interventions/{userId}") {
         fun createRoute(userId: String) : String {
             return this.route.replace("{userId}", userId)
         }
 
         val arguments = listOf(
-            navArgument("userId") { type = NavType.StringType}
+            navArgument("userId") { type = NavType.StringType }
         )
     }
 

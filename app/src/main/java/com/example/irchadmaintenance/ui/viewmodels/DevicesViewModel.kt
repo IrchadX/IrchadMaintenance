@@ -27,7 +27,7 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
             _error.value = null
             try {
                 Log.d("DeviceViewModel", "Attempting to fetch devices for user $userId")
-                val result = repository.getDevicesByUser(userId)
+                val result = repository.getAllDevices()
                 Log.d("DeviceViewModel", "API Response: $result")
                 _devices.clear()
                 _devices.addAll(result)
@@ -71,7 +71,7 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
                 softwareVersion = response.softwareVersion ?: "Non disponible",
                 commState = response.commState ?: false,
 
-            )
+                )
         } catch (e: Exception) {
             Log.e("DeviceViewModel", "Error running diagnostic for device $id", e)
             return null

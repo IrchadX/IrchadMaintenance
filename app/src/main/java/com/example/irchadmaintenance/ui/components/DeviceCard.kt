@@ -92,13 +92,13 @@ fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (Stri
                 }
 
                 // Distance
-          /*      Text(
-                    text = "${device.distance}km",
-                    color = Color(0xFF2B7A78),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 32.dp),
-                    fontSize = 10.sp
-                ) */
+                /*      Text(
+                          text = "${device.distance}km",
+                          color = Color(0xFF2B7A78),
+                          fontWeight = FontWeight.SemiBold,
+                          modifier = Modifier.padding(start = 32.dp),
+                          fontSize = 10.sp
+                      ) */
             }
 
             // Right side with status and image
@@ -111,30 +111,30 @@ fun DeviceCard(modifier: Modifier = Modifier, device: Device, onCardClick: (Stri
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Device image
-               /* val context = LocalContext.current
-                device.imageName.let { drawableName ->
-                    val imageResId = remember(drawableName) {
-                        context.resources.getIdentifier(drawableName, "drawable", context.packageName)
-                    }
+                /* val context = LocalContext.current
+                 device.imageName.let { drawableName ->
+                     val imageResId = remember(drawableName) {
+                         context.resources.getIdentifier(drawableName, "drawable", context.packageName)
+                     }
 
-                    if (imageResId != 0) {
-                        Image(
-                            painter = painterResource(id = imageResId),
-                            contentDescription = device.name,
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(70.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            contentScale = ContentScale.Fit
-                        )
-                    }else {
-                        Text(text="imafe does not existe")
-                    }
-                }*/val context = LocalContext.current
+                     if (imageResId != 0) {
+                         Image(
+                             painter = painterResource(id = imageResId),
+                             contentDescription = device.name,
+                             modifier = Modifier
+                                 .width(100.dp)
+                                 .height(70.dp)
+                                 .clip(RoundedCornerShape(4.dp)),
+                             contentScale = ContentScale.Fit
+                         )
+                     }else {
+                         Text(text="imafe does not existe")
+                     }
+                 }*/val context = LocalContext.current
                 val imageId = remember(device.imageName) {
                     context.resources.getIdentifier(device.imageName, "drawable", context.packageName)
                 }
-               // Text(text=device.imageName)
+                // Text(text=device.imageName)
                 if (imageId != 0) {
                     Image(
                         painter = painterResource(id = imageId),

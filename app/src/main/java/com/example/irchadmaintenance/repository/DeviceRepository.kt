@@ -130,6 +130,6 @@ class DeviceRepository {
             softwareVersion = dbResult.softwareVersion,
             commState = dbResult.commState,
 
-        )
+            )
     }
 }

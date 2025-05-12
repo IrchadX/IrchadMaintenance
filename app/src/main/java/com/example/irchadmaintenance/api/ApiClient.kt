@@ -16,7 +16,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "http://192.168.12.216:3000/"
+    private const val BASE_URL = "http://192.168.176.216:3000/"
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }

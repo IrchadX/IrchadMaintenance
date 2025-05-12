@@ -60,7 +60,7 @@ class DeviceDetailViewModel : ViewModel() {
                 softwareVersion = response.softwareVersion ?: "Non disponible",
                 commState = response.commState ?: false,
 
-            )
+                )
         } catch (e: Exception) {
             Log.e("DeviceViewModel", "Error running diagnostic for device $id", e)
             return null

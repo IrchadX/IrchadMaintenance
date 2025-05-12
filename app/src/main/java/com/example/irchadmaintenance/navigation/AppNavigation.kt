@@ -72,7 +72,7 @@ fun AppNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             InterventionScreen(
-                userId = userId,
+                userId = "74",
                 navController = navController,
                 viewModel = interventionViewModel
             )
