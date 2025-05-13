@@ -4,6 +4,8 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 sealed class Destination(val route: String) {
+    object Login : Destination("Login")
+
     object DeviceList : Destination("device_list")
 
     object DeviceDetails : Destination("device_details/{userId}/{deviceId}") {

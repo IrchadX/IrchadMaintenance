@@ -14,6 +14,7 @@ import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionDetailsScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
 import com.example.irchadmaintenance.ui.screens.InterventionsListScreen
+import com.example.irchadmaintenance.ui.screens.LoginScreen
 import com.example.irchadmaintenance.ui.screens.NotificationDetailsScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.UserProfileScreen
@@ -23,10 +24,17 @@ import com.example.irchadmaintenance.ui.screens.UserProfileScreen
 fun AppNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Destination.DeviceList.route
+        startDestination = Destination.Login.route
     ) {
 
-        composable(Destination.DeviceList.route) {
+        composable(Destination.Login.route) {
+            LoginScreen(navController = navController)
+        }
+
+
+        composable(
+            Destination.DeviceList.route
+        ) {
             val userId = "user001"
             DevicesScreen(
                 userId,
