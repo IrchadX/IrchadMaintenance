@@ -3,7 +3,17 @@ package com.example.irchadmaintenance.navigation
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
+/**
+ * Navigation destinations for the app
+ */
 sealed class Destination(val route: String) {
+    // Authentication routes
+    object SignIn : Destination("signin")
+    object SignUp : Destination("signup")
+    object Loading : Destination("loading")
+    object Account : Destination("account")
+
+    // Main app routes
     object DeviceList : Destination("device_list")
 
     object DeviceDetails : Destination("device_details/{deviceId}") {

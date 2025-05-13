@@ -76,4 +76,10 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation (libs.socket.io.client)
     implementation(libs.osmdroid.android)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material)
+    implementation (libs.hilt.android)
+    implementation (libs.androidx.datastore.preferences)
+    implementation (libs.androidx.datastore.preferences.core)
+    implementation (libs.java.jwt)
 }

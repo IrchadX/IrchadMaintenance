@@ -40,6 +40,7 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
             }
         }
     }
+
     suspend fun loadDeviceById(deviceId: Int): Device? {
         return try {
             _isLoading.value = true
@@ -51,6 +52,7 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
             _isLoading.value = false
         }
     }
+
     suspend fun runDiagnostic(id: Int): DeviceDiagnosticApiModel? {
         try {
             val response = repository.runDiagnostic(id)
@@ -70,8 +72,7 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
                 macAddress = response.macAddress ?: "Non disponible", // Solution pour macAddress null
                 softwareVersion = response.softwareVersion ?: "Non disponible",
                 commState = response.commState ?: false,
-
-                )
+            )
         } catch (e: Exception) {
             Log.e("DeviceViewModel", "Error running diagnostic for device $id", e)
             return null
