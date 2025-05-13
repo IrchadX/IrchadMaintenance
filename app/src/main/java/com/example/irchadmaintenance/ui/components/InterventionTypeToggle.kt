@@ -18,7 +18,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.irchadmaintenance.ui.screens.InterventionType
+import com.example.irchadmaintenance.data.InterventionType
+
 
 
 @Composable

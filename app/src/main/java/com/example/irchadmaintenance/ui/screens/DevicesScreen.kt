@@ -9,45 +9,39 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.UserSampleData
-import com.example.irchadmaintenance.data.UserSampleData.users
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.components.StatusFilterButton
 
 @Composable
 fun DevicesScreen(
-    userId : String,
+    userId: String,
     devices: List<Device>,
     onDeviceClick: (String) -> Unit,
     navController: NavController
 ) {
-
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf<String?>(null) }
 
     val filteredDevices = devices.filter { device ->
-
         val matchesSearch = device.name.contains(searchQuery, ignoreCase = true) ||
                 device.id.contains(searchQuery, ignoreCase = true) ||
                 device.status.contains(searchQuery, ignoreCase = true) ||
                 device.location.contains(searchQuery, ignoreCase = true)
-
         val matchesStatus = selectedStatus == null || device.status == selectedStatus
-
         matchesSearch && matchesStatus
     }
-
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         val user = UserSampleData.users.find { it.userId == userId }
         AppHeader(
-            user,
-            navController,
-            "",
-            true,
-            false
+            user = user,
+            navController = navController,
+            title = "Appareils",
+            default = true,
+            warning = false
         )
 
         Spacer(modifier = Modifier.height(15.dp))

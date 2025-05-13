@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ import com.example.irchadmaintenance.data.NotificationSeverity
 
 @Composable
 fun NotificationsList(
-    notifications: List<Notification>, // Changed from mutableStateListOf
+    notifications: List<Notification>,
     showOnlyUnread: Boolean,
     onNotificationClick: (Notification) -> Unit
 ) {
@@ -36,7 +37,7 @@ fun NotificationsList(
                 notification = notification,
                 onClick = { onNotificationClick(notification) }
             )
-            Divider(
+            HorizontalDivider(
                 color = Color(0xFFE2E4E8),
                 thickness = 1.dp
             )

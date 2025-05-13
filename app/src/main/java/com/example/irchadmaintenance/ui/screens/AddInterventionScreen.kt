@@ -19,6 +19,8 @@ import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.ui.components.*
 import java.time.LocalDate
 import java.time.YearMonth
+import com.example.irchadmaintenance.data.InterventionType
+
 
 
 val TealColor = Color(0xFF2AA198)
@@ -30,9 +32,6 @@ val LightGrayBgColor = Color(0xFFF5F5F5)
 val GrayTextColor = Color(0xFF616161)
 val MediumGrayColor = Color(0xFFE0E0E0)
 
-enum class InterventionType {
-    PREVENTIVE, CURATIVE
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -63,7 +62,7 @@ fun InterventionScreen(userId: String, deviceId : String,  navController: NavCon
             AppHeader(
                 user = user,
                 navController = navController,
-                title = "Intervention",
+                title = "Ajouter Intervention",
                 default = false,
                 warning = true
             )

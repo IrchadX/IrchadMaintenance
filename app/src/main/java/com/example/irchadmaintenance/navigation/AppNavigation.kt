@@ -11,7 +11,9 @@ import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
+import com.example.irchadmaintenance.ui.screens.InterventionDetailsScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
+import com.example.irchadmaintenance.ui.screens.InterventionsListScreen
 import com.example.irchadmaintenance.ui.screens.NotificationDetailsScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.UserProfileScreen
@@ -57,6 +59,14 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(
+            route = Destination.InterventionsList.route,
+            arguments = Destination.InterventionsList.arguments
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            InterventionsListScreen(userId = userId, navController = navController)
+        }
+
+        composable(
             route = Destination.UserProfile.route,
             arguments = Destination.UserProfile.arguments
         ) { backStackEntry ->
@@ -80,6 +90,19 @@ fun AppNavigation(navController: NavHostController) {
             val notificationId = backStackEntry.arguments?.getString("notificationId") ?: ""
             val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
             NotificationDetailsScreen(userId = userId, notificationId = notificationId, deviceId = deviceId, navController = navController)
+        }
+
+        composable(
+            route = Destination.InterventionDetails.route,
+            arguments = Destination.InterventionDetails.arguments
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            val interventionId = backStackEntry.arguments?.getString("interventionId") ?: ""
+            InterventionDetailsScreen(
+                userId = userId,
+                interventionId = interventionId,
+                navController = navController
+            )
         }
 
     }

@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.data.UserSampleData
+import com.example.irchadmaintenance.ui.components.AppHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,94 +30,17 @@ fun UserProfileScreen(
 
     val userDevices = SampleData.devices.filter { it.userId == userId }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("User Profile") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (user != null) {
-                Text(
-                    text = "User ID: ${user.userId}",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AppHeader(
+            user = user,
+            navController = navController,
+            title = "Profil",
+            default = false,
+            warning = false
+        )
 
-                Text(
-                    text = "Name: ${user.name}",
-                    fontSize = 16.sp
-                )
-
-                Text(
-                    text = "Notifications: ${user.notificationCount}",
-                    fontSize = 16.sp
-                )
-
-                if (userDevices.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Text(
-                        text = "Associated Devices (${userDevices.size})",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    userDevices.forEach { device ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = device.name,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-
-                            Text(
-                                text = "ID: ${device.id}",
-                                fontSize = 14.sp
-                            )
-
-                            Text(
-                                text = "Status: ${device.status}",
-                                fontSize = 14.sp
-                            )
-
-                            Text(
-                                text = "Location: ${device.location}",
-                                fontSize = 14.sp
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                } else {
-                    Text(
-                        text = "No devices associated with this user",
-                        fontSize = 16.sp
-                    )
-                }
-            } else {
-                Text("User not found with ID: $userId")
-            }
-        }
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
