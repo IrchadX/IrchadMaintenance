@@ -33,7 +33,7 @@ import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DiagnosticInfo
-import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
+import com.example.irchadmaintenance.viewmodels.DeviceViewModel
 import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
 import kotlinx.coroutines.launch
 

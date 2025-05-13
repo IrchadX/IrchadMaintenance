@@ -1,4 +1,4 @@
-package com.example.irchadmaintenance.ui.viewmodels
+package com.example.irchadmaintenance.viewmodels
 
 import android.os.Build
 import android.util.Log

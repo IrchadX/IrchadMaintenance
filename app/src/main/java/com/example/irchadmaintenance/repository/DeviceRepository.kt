@@ -2,7 +2,7 @@ package com.example.irchadmaintenance.repository
 
 import android.util.Log
 import com.example.irchadmaintenance.data.Device
-import com.example.irchadmaintenance.api.ApiClient
+import com.example.irchadmaintenance.api.Client
 import com.example.irchadmaintenance.data.models.CreateDeviceDto
 import com.example.irchadmaintenance.data.models.DeviceApiModel
 import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
@@ -13,7 +13,7 @@ import java.util.Date
 import java.util.Locale
 
 class DeviceRepository {
-    private val apiService = ApiClient.deviceApiService
+    private val apiService = Client.deviceApiService
 
     suspend fun getAllDevices(): List<Device> {
         return apiService.getAllDevices().map { it.toDevice() }

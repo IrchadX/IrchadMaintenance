@@ -38,12 +38,27 @@ sealed class Destination(val route: String) {
     }
 
     object Notifications : Destination("notifications/{userId}") {
-        fun createRoute(userId: String) : String {
+        fun createRoute(userId: String): String {
             return this.route.replace("{userId}", userId)
         }
 
         val arguments = listOf(
             navArgument("userId") { type = NavType.StringType }
+        )
+    }
+
+    object NotificationDetails : Destination("notification_details/{userId}/{notificationId}/{deviceId}") {
+        fun createRoute(userId: String, notificationId: Int, deviceId: Int?): String {
+            return this.route
+                .replace("{userId}", userId)
+                .replace("{notificationId}", notificationId.toString())
+                .replace("{deviceId}", (deviceId ?: 0).toString())
+        }
+
+        val arguments = listOf(
+            navArgument("userId") { type = NavType.StringType },
+            navArgument("notificationId") { type = NavType.IntType },
+            navArgument("deviceId") { type = NavType.IntType }
         )
     }
 }

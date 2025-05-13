@@ -1,7 +1,7 @@
 package com.example.irchadmaintenance.repository
 
 import android.util.Log
-import com.example.irchadmaintenance.api.ApiClient
+import com.example.irchadmaintenance.api.Client
 import com.example.irchadmaintenance.data.models.CreateInterventionDto
 import com.example.irchadmaintenance.data.models.Intervention
 import com.example.irchadmaintenance.data.models.InterventionApiModel
@@ -13,7 +13,7 @@ import java.util.Date
 import java.util.Locale
 
 class InterventionRepository {
-    private val apiService = ApiClient.interventionApiService
+    private val apiService = Client.interventionApiService
 
     suspend fun getAllInterventions(): List<Intervention> {
         return apiService.getAllInterventions().map { it.toIntervention() }

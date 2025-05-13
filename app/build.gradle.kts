@@ -74,5 +74,6 @@ dependencies {
     implementation (libs.kotlinx.coroutines.android)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.runtime.livedata)
-
+    implementation (libs.socket.io.client)
+    implementation(libs.osmdroid.android)
 }

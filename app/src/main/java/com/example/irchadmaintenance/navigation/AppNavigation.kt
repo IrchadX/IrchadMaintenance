@@ -14,10 +14,11 @@ import com.example.irchadmaintenance.repository.InterventionRepository
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
+import com.example.irchadmaintenance.ui.screens.NotificationDetailsScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.UserProfileScreen
-import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
-import com.example.irchadmaintenance.ui.viewmodels.InterventionViewModel
+import com.example.irchadmaintenance.viewmodels.DeviceViewModel
+import com.example.irchadmaintenance.viewmodels.InterventionViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -72,7 +73,7 @@ fun AppNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             InterventionScreen(
-                userId = "74",
+                userId = "97",
                 navController = navController,
                 viewModel = interventionViewModel
             )
@@ -92,6 +93,16 @@ fun AppNavigation(navController: NavHostController) {
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: ""
             NotificationsScreen(userId = userId, navController = navController)
+        }
+
+        composable(
+            route = Destination.NotificationDetails.route,
+            arguments = Destination.NotificationDetails.arguments
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            val notificationId = backStackEntry.arguments?.getInt("notificationId") ?: 0
+            val deviceId = backStackEntry.arguments?.getInt("deviceId") ?: 0
+            NotificationDetailsScreen(userId = userId, notificationId = notificationId, deviceId = deviceId, navController = navController)
         }
     }
 }

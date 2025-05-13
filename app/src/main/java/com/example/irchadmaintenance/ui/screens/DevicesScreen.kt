@@ -27,7 +27,7 @@ import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.components.StatusFilterButton
-import com.example.irchadmaintenance.ui.viewmodels.DeviceViewModel
+import com.example.irchadmaintenance.viewmodels.DeviceViewModel
 
 @Composable
 fun DevicesScreen(

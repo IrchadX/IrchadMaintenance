@@ -36,7 +36,7 @@ import com.example.irchadmaintenance.ui.components.InterventionCalendar
 import com.example.irchadmaintenance.ui.components.InterventionTypeToggle
 import com.example.irchadmaintenance.ui.components.LocationIcon
 import com.example.irchadmaintenance.ui.components.SuccessToast
-import com.example.irchadmaintenance.ui.viewmodels.InterventionViewModel
+import com.example.irchadmaintenance.viewmodels.InterventionViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 
