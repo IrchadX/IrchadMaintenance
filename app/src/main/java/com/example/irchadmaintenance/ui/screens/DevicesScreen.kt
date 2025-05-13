@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,12 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
-import com.example.irchadmaintenance.data.User
-import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceList
 import com.example.irchadmaintenance.ui.components.StatusFilterButton
+import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import com.example.irchadmaintenance.viewmodels.DeviceViewModel
+
+import com.example.irchadmaintenance.data.models.User
 
 @Composable
 fun DevicesScreen(
@@ -35,8 +37,9 @@ fun DevicesScreen(
     devices: List<Device>,
     onDeviceClick: (String) -> Unit,
     navController: NavController,
-    viewModel: DeviceViewModel
-) {
+    viewModel: DeviceViewModel,
+    authViewModel: AuthViewModel
+) {val user by authViewModel.user.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf<String?>(null) }
 
@@ -56,20 +59,13 @@ fun DevicesScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Get user from your data source - make sure this can't return null
-        val user = UserSampleData.users.find { it.userId == userId } ?: User(
-            userId = userId,
-            name = "Unknown User",
-            profilePicUrl = "user", // default profile picture
-            notificationCount = 5
-        )
-
         AppHeader(
-            user = user,
+            user = user, // Use the authenticated user
             navController = navController,
             title = "",
             default = true,
-            warning = false
+            warning = false,
+            authViewModel = authViewModel
         )
 
         // Add this to show loading and error states

@@ -33,6 +33,7 @@ class InterventionRepository {
         title: String,
         location: String,
         description: String,
+        deviceId: Int?,
         interventionType: InterventionType
     ): Intervention {
         try {
@@ -44,7 +45,7 @@ class InterventionRepository {
             val date = Date.from(scheduledDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
 
             val createDto = CreateInterventionDto(
-                device_id = null, // Can be updated if needed
+                device_id =  deviceId, // Can be updated if needed
                 maintenancier_id = userId,
                 scheduled_date = date,
                 description = description,

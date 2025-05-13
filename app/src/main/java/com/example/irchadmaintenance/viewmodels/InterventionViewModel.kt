@@ -64,6 +64,7 @@ class InterventionViewModel(private val repository: InterventionRepository) : Vi
     @RequiresApi(Build.VERSION_CODES.O)
     fun createIntervention(
         userId: Int,
+        deviceId: Int?,
         selectedDate: LocalDate,
         title: String,
         location: String,
@@ -78,6 +79,7 @@ class InterventionViewModel(private val repository: InterventionRepository) : Vi
             try {
                 val intervention = repository.createIntervention(
                     userId = userId,
+                    deviceId = deviceId,
                     scheduledDate = selectedDate,
                     title = title,
                     location = location,

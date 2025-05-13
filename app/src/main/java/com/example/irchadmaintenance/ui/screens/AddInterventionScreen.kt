@@ -17,6 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.BackConfirmationDialog
 import com.example.irchadmaintenance.ui.components.FormTextField
@@ -36,6 +36,7 @@ import com.example.irchadmaintenance.ui.components.InterventionCalendar
 import com.example.irchadmaintenance.ui.components.InterventionTypeToggle
 import com.example.irchadmaintenance.ui.components.LocationIcon
 import com.example.irchadmaintenance.ui.components.SuccessToast
+import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import com.example.irchadmaintenance.viewmodels.InterventionViewModel
 import java.time.LocalDate
 import java.time.YearMonth
@@ -58,11 +59,16 @@ enum class InterventionType {
 fun InterventionScreen(
     userId: String,
     navController: NavController,
-    viewModel: InterventionViewModel
+    viewModel: InterventionViewModel,
+    authViewModel: AuthViewModel
 ) {
+    val user by authViewModel.user.collectAsState()
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.error
     val success by viewModel.success
+
+    // Get deviceId from navController argument bundle
+    val deviceId = navController.currentBackStackEntry?.arguments?.getString("deviceId")
 
     var showSuccessToast by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
@@ -90,17 +96,14 @@ fun InterventionScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val user = UserSampleData.users.find { it.userId == userId }
-
+        Column(modifier = Modifier.fillMaxSize()) {
             AppHeader(
-                user = user,
+                user = user, // Use the authenticated user
                 navController = navController,
-                title = "Intervention",
-                default = false,
-                warning = true
+                title = "",
+                default = true,
+                warning = false,
+                authViewModel = authViewModel
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -180,13 +183,13 @@ fun InterventionScreen(
                         if (selectedDate != null && title.isNotBlank()) {
                             viewModel.createIntervention(
                                 userId = userId.toInt(),
+                                deviceId = deviceId?.toIntOrNull(),  // Pass the deviceId to the viewModel
                                 selectedDate = selectedDate!!,
                                 title = title,
                                 location = location,
                                 description = description,
                                 interventionType = interventionType
                             )
-
                             // Fields will be reset on success via the LaunchedEffect
                         }
                     },

@@ -2,34 +2,14 @@ package com.example.irchadmaintenance.data.models
 
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
-
 data class User(
-    val id: Int,
+    val id: Int? = null,
+    val firstName: String? = null,
+    val familyName: String? = null,
+    val email: String? = null,
+    val phoneNumber: String? = null,
+    val userType: String? = null,
 
-    @SerializedName("family_name")
-    val familyName: String?,
-
-    @SerializedName("first_name")
-    val firstName: String?,
-
-    @SerializedName("phone_number")
-    val phoneNumber: String?,
-
-    val password: String?,
-
-    @SerializedName("userTypeId")
-    val userTypeId: Int?,
-
-    val email: String?,
-    val sex: String?,
-    val street: String?,
-    val city: String?,
-    @SerializedName("Identifier")
-    val identifier: String?,
-
-    @SerializedName("birthDate")
-    val birthDate: String?,
-
-    @SerializedName("userType")
-    val userType: String?
-)
+    // Additional fields for UI purposes
+    val profilePicUrl: String? = null,
+    val notificationCount: Int = 0)

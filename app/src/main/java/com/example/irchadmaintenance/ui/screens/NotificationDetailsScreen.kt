@@ -21,9 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.ui.components.AppHeader
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -31,30 +35,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.viewmodels.NotificationsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.navigation.Destination
+import com.example.irchadmaintenance.state.AuthUIState
 import com.example.irchadmaintenance.ui.components.OSMDroidMap
+import com.example.irchadmaintenance.viewmodels.AuthViewModel
+
 
 @Composable
 fun NotificationDetailsScreen(
     notificationId: Int,
     userId: String,
-    deviceId: Int,
-    navController: NavController
+    deviceId: Int?, // Changed from Device? to Int? to match expected type
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
+    val user by authViewModel.user.collectAsState()
     val viewModel: NotificationsViewModel = viewModel()
     val notification = viewModel.notifications.find { it.id == notificationId }
-    val user = UserSampleData.users.find { it.userId == userId }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
-            user,
-            navController,
-            "Alertes",
-            false,
-            false
+            user = user, // Use the authenticated user
+            navController = navController,
+            title = "",
+            default = true,
+            warning = false,
+            authViewModel = authViewModel
         )
 
         Spacer(modifier = Modifier.height(15.dp))
@@ -69,7 +77,6 @@ fun NotificationDetailsScreen(
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
 
                 Spacer(modifier = Modifier.height(48.dp))
                 Column(
@@ -90,7 +97,7 @@ fun NotificationDetailsScreen(
                         )
 
                         Text(
-                            text = deviceId.toString(),
+                            text = deviceId?.toString() ?: "Aucun", // Using deviceId directly as an Int
                             fontSize = 20.sp,
                             color = Color(0xFFAAA3A3)
                         )
@@ -123,12 +130,16 @@ fun NotificationDetailsScreen(
 
                     Spacer(modifier = Modifier.height(42.dp))
 
-                    Button(
-                        onClick = {
-                            navController.navigate(
-                                Destination.Interventions.createRoute(userId)
+                    Button(onClick = {
+                        // Get the authenticated user ID
+                        val userId = (authViewModel.authState.value as? AuthUIState.Authenticated)?.userId ?: ""
+                        navController.navigate(
+                            Destination.Interventions.createRoute(
+                                userId = userId,
+                                deviceId = deviceId?.toString() ?: "0" // Convert deviceId to String for navigation
                             )
-                        },
+                        )
+                    },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF17252A),
                             contentColor = Color(0xFFFCFFFE)

@@ -29,20 +29,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
-import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DiagnosticInfo
 import com.example.irchadmaintenance.viewmodels.DeviceViewModel
 import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
+import com.example.irchadmaintenance.state.AuthUIState
+import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun DeviceDetailsScreen(
     deviceId: String,
     navController: NavController,
-    viewModel: DeviceViewModel
-) {
+    viewModel: DeviceViewModel,
+    authViewModel: AuthViewModel
+) {val user by authViewModel.user.collectAsState()
     var device by remember { mutableStateOf<Device?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var showDiagnostics by remember { mutableStateOf(false) }
@@ -83,13 +85,14 @@ fun DeviceDetailsScreen(
         }
     }
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
-            user = UserSampleData.users.find { it.userId == device?.userId },
+            user = user, // Use the authenticated user
             navController = navController,
-            title = "Dispositifs",
-            false,
-            false
+            title = "",
+            default = true,
+            warning = false,
+            authViewModel = authViewModel
         )
 
         if (isLoading) {
@@ -210,8 +213,13 @@ fun DeviceDetailsScreen(
 
                 Button(
                     onClick = {
+                        // Get the authenticated user ID
+                        val userId = (authViewModel.authState.value as? AuthUIState.Authenticated)?.userId ?: ""
                         navController.navigate(
-                            Destination.Interventions.createRoute("74")
+                            Destination.Interventions.createRoute(
+                                userId = userId,
+                                deviceId = deviceId  // Pass the deviceId from the screen parameter
+                            )
                         )
                     },
                     colors = ButtonDefaults.buttonColors(

@@ -1,5 +1,4 @@
 package com.example.irchadmaintenance.navigation
-
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -24,7 +23,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.irchadmaintenance.repository.DeviceRepository
 import com.example.irchadmaintenance.repository.InterventionRepository
 import com.example.irchadmaintenance.state.AuthUIState
-import com.example.irchadmaintenance.ui.components.NavBar
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
@@ -41,7 +39,7 @@ import com.example.irchadmaintenance.viewmodels.UserViewModel
 fun AppNavigation(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
 ) {
     val authState by authViewModel.authState.collectAsState()
 
@@ -54,46 +52,62 @@ fun AppNavigation(
     val interventionRepository = InterventionRepository()
     val interventionViewModel = remember { InterventionViewModel(interventionRepository) }
 
-    // Determine start destination based on authentication state
-    val startDestination = when (authState) {
-        is AuthUIState.Authenticated -> {
-            val userId = (authState as AuthUIState.Authenticated).userId
-            Log.d("Navigation", "User authenticated with ID: $userId")
+    // Log the current auth state for debugging
+    LaunchedEffect(authState) {
+        Log.d("AppNavigation", "Auth state changed to: $authState")
 
-            // Load devices for the authenticated user
-            LaunchedEffect(key1 = userId) {
-                try {
-                    deviceViewModel.loadDevicesForUser(userId.toInt())
-                } catch (e: Exception) {
-                    Log.e("AppNavigation", "Failed to load devices", e)
+        // Force navigation based on auth state changes
+        when (authState) {
+            is AuthUIState.Authenticated -> {
+                if (currentRoute != Destination.DeviceList.route) {
+                    navController.navigate(Destination.DeviceList.route) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
                 }
             }
-
-            Destination.DeviceList.route
-        }
-        is AuthUIState.Unauthenticated -> {
-            Log.d("Navigation", "User unauthenticated, showing login")
-            Destination.SignIn.route
-        }
-        is AuthUIState.Loading -> {
-            Log.d("Navigation", "Auth state loading")
-            Destination.Loading.route
-        }
-        else -> {
-            Log.d("Navigation", "Default case: showing login")
-            Destination.SignIn.route
+            is AuthUIState.Unauthenticated -> {
+                if (currentRoute != Destination.SignIn.route) {
+                    navController.navigate(Destination.SignIn.route) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                }
+            }
+            else -> {} // Handle other states as needed
         }
     }
+
+    val startDestination = Destination.Loading.route
 
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        // Authentication screens
+        // Loading screen as the initial destination
         composable(Destination.Loading.route) {
             LoadingScreen()
+
+            // This LaunchedEffect ensures we react to the auth state from the loading screen
+            LaunchedEffect(authState) {
+                when (authState) {
+                    is AuthUIState.Authenticated -> {
+                        val userId = (authState as AuthUIState.Authenticated).userId
+                        Log.d("Loading Screen", "User authenticated with ID: $userId")
+                        navController.navigate(Destination.DeviceList.route) {
+                            popUpTo(Destination.Loading.route) { inclusive = true }
+                        }
+                    }
+                    is AuthUIState.Unauthenticated -> {
+                        Log.d("Loading Screen", "User not authenticated, redirecting to sign in")
+                        navController.navigate(Destination.SignIn.route) {
+                            popUpTo(Destination.Loading.route) { inclusive = true }
+                        }
+                    }
+                    else -> {} // Keep showing loading screen for AuthUIState.Loading
+                }
+            }
         }
 
+        // Authentication screens
         composable(Destination.SignIn.route) {
             SignInScreen(
                 navController = navController,
@@ -101,14 +115,26 @@ fun AppNavigation(
             )
         }
 
-        // Main app screens - wrapped with NavBar
         composable(Destination.DeviceList.route) {
+            val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
+
+            // Only load devices if we have a valid userId
+            if (userId.isNotEmpty()) {
+                LaunchedEffect(key1 = userId) {
+                    try {
+                        deviceViewModel.loadDevicesForUser(userId.toInt())
+                    } catch (e: Exception) {
+                        Log.e("AppNavigation", "Failed to load devices", e)
+                    }
+                }
+            }
+
             ContentScreenWithNavBar(
                 navController = navController,
                 currentRoute = currentRoute
             ) {
                 DevicesScreen(
-                    userId = (authState as? AuthUIState.Authenticated)?.userId ?: "",
+                    userId = userId,
                     devices = deviceViewModel.devices,
                     onDeviceClick = { deviceId ->
                         navController.navigate(
@@ -116,11 +142,13 @@ fun AppNavigation(
                         )
                     },
                     navController = navController,
-                    viewModel = deviceViewModel
+                    viewModel = deviceViewModel,
+                    authViewModel = authViewModel
                 )
             }
         }
 
+        // Rest of your navigation definitions...
         composable(
             route = Destination.DeviceDetails.route,
             arguments = Destination.DeviceDetails.arguments
@@ -133,7 +161,8 @@ fun AppNavigation(
                 DeviceDetailsScreen(
                     deviceId = deviceId,
                     navController = navController,
-                    viewModel = deviceViewModel
+                    viewModel = deviceViewModel,
+                    authViewModel = authViewModel
                 )
             }
         }
@@ -150,7 +179,8 @@ fun AppNavigation(
                 InterventionScreen(
                     userId = userId,
                     navController = navController,
-                    viewModel = interventionViewModel
+                    viewModel = interventionViewModel,
+                    authViewModel = authViewModel
                 )
             }
         }
@@ -167,7 +197,7 @@ fun AppNavigation(
                 NotificationsScreen(
                     userId = userId,
                     navController = navController,
-
+                    authViewModel = authViewModel
                 )
             }
         }
@@ -187,7 +217,8 @@ fun AppNavigation(
                     userId = userId,
                     notificationId = notificationId,
                     deviceId = deviceId,
-                    navController = navController
+                    navController = navController,
+                    authViewModel = authViewModel
                 )
             }
         }
@@ -201,9 +232,7 @@ fun ContentScreenWithNavBar(
     content: @Composable () -> Unit
 ) {
     Scaffold(
-        bottomBar = {
-            NavBar(navController = navController, currentRoute = currentRoute)
-        }
+
     ) { paddingValues ->
         Box(
             modifier = Modifier

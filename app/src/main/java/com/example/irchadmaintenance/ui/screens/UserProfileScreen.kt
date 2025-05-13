@@ -10,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -17,18 +19,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.SampleData
-import com.example.irchadmaintenance.data.UserSampleData
+import com.example.irchadmaintenance.viewmodels.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileScreen(
     userId: String,
-    navController: NavController
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
-    val user = UserSampleData.users.find { it.userId == userId }
-
+    val user by authViewModel.user.collectAsState()
     val userDevices = SampleData.devices.filter { it.userId == userId }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,15 +53,16 @@ fun UserProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            if (user != null) {
+            user?.let { user ->
                 Text(
-                    text = "User ID: ${user.userId}",
+                    text = "User ID: ${user.id}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = "Name: ${user.name}",
+                    text = "Name: ${user.firstName ?: ""} ${user.familyName ?: ""}".trim()
+                        .ifEmpty { "Unknown" },
                     fontSize = 16.sp
                 )
 
@@ -114,9 +116,7 @@ fun UserProfileScreen(
                         fontSize = 16.sp
                     )
                 }
-            } else {
-                Text("User not found with ID: $userId")
-            }
+            } ?: Text("User not found with ID: $userId")
         }
     }
 }

@@ -20,10 +20,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.Notification
-import com.example.irchadmaintenance.data.UserSampleData
 import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.NotificationsList
+import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import com.example.irchadmaintenance.viewmodels.NotificationsViewModel
 
 @Composable
@@ -31,7 +31,8 @@ fun NotificationsScreen(
     userId: String,
     //   alerts: List<Notification>,
     navController: NavController,
-    viewModel: NotificationsViewModel = viewModel()
+    viewModel: NotificationsViewModel = viewModel(),
+    authViewModel: AuthViewModel
 ) {
     val context = LocalContext.current
     val viewModel: NotificationsViewModel = viewModel()
@@ -39,8 +40,7 @@ fun NotificationsScreen(
     LaunchedEffect(Unit) {
         viewModel.listenForRealTimeAlerts(context)
     }
-    val user = UserSampleData.users.find { it.userId == userId }
-
+    val user by authViewModel.user.collectAsState()
     val notifications = viewModel.notifications
 
     var selectedTab by remember { mutableStateOf(0) }
@@ -48,16 +48,16 @@ fun NotificationsScreen(
 
 
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
-            user = user,
+            user = user, // Use the authenticated user
             navController = navController,
-            title = "Alertes",
-            default = false,
-            warning = false
+            title = "",
+            default = true,
+            warning = false,
+            authViewModel = authViewModel
         )
+
 
         Spacer(modifier = Modifier.height(24.dp))
 

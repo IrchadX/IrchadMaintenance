@@ -11,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.irchadmaintenance.api.Client
 import com.example.irchadmaintenance.data.models.SignInRequest
 import com.example.irchadmaintenance.data.models.SignInResponse
+import com.example.irchadmaintenance.data.models.User
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,12 +22,14 @@ import retrofit2.HttpException
 private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_prefs")
 
 class AuthRepository(private val context: Context) {
-   private val authApi = Client.authApi
+    private val authApi = Client.authApi
 
     companion object {
         val USER_ID = stringPreferencesKey("user_id")
         val AUTH_TOKEN = stringPreferencesKey("auth_token")
         val USER_EMAIL = stringPreferencesKey("user_email")
+        val USER_FAMILY_NAME = stringPreferencesKey("user_family_name")
+        val USER_FIRST_NAME = stringPreferencesKey("user_first_name")
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -34,7 +37,7 @@ class AuthRepository(private val context: Context) {
         try {
             val request = SignInRequest(email, password)
             val response = authApi.signIn(request)
-            saveAuthInfo(response.user.id.toString(), response.token, email)
+            saveAuthInfo(response.user, response.token, email) // Pass the User object
             return response
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
@@ -50,17 +53,22 @@ class AuthRepository(private val context: Context) {
     }
 
 
-
-
-
-    suspend fun saveAuthInfo(userId: String, token: String, email: String) {
+    suspend fun saveAuthInfo(user: User, token: String, email: String) {
         context.authDataStore.edit { preferences ->
-            preferences[USER_ID] = userId
+            preferences[USER_ID] = user.id.toString()
             preferences[AUTH_TOKEN] = token
             preferences[USER_EMAIL] = email
+            preferences[USER_FAMILY_NAME] = user.familyName ?: ""
+            preferences[USER_FIRST_NAME] = user.firstName ?: ""
         }
     }
+    fun getUserFamilyName(): Flow<String?> {
+        return context.authDataStore.data.map { it[USER_FAMILY_NAME] }
+    }
 
+    fun getUserFirstName(): Flow<String?> {
+        return context.authDataStore.data.map { it[USER_FIRST_NAME] }
+    }
     fun getUserId(): Flow<String?> {
         return context.authDataStore.data.map { preferences ->
             preferences[USER_ID]

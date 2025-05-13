@@ -26,25 +26,23 @@ sealed class Destination(val route: String) {
         )
     }
 
-    // Make sure this matches the navigation call in DeviceDetailsScreen.kt
-    object Interventions : Destination("add_interventions/{userId}") {
-        fun createRoute(userId: String) : String {
-            return this.route.replace("{userId}", userId)
+    object Interventions : Destination("add_interventions/{userId}/{deviceId}") {
+        fun createRoute(userId: String, deviceId: String) : String {
+            return this.route
+                .replace("{userId}", userId)
+                .replace("{deviceId}", deviceId)
         }
 
         val arguments = listOf(
-            navArgument("userId") { type = NavType.StringType }
+            navArgument("userId") { type = NavType.StringType },
+            navArgument("deviceId") { type = NavType.StringType }
         )
     }
 
     object UserProfile : Destination("user_profile/{userId}") {
-        fun createRoute(userId: String) : String {
-            return this.route.replace("{userId}", userId)
+        fun createRoute(userId: String): String {
+            return "user_profile/$userId"
         }
-
-        val arguments = listOf(
-            navArgument("userId") { type = NavType.StringType }
-        )
     }
 
     object Notifications : Destination("notifications/{userId}") {
