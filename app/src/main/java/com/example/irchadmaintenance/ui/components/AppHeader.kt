@@ -1,5 +1,5 @@
 package com.example.irchadmaintenance.ui.components
-import android.util.Log
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,14 +52,13 @@ import com.example.irchadmaintenance.viewmodels.AuthViewModel
 @Composable
 fun AppHeader(user: User?, navController: NavController, title: String, default: Boolean, warning: Boolean = false,
               authViewModel: AuthViewModel
-) {
+) {val user by authViewModel.user.collectAsState()
     Box() {
         Icon(
             painter = painterResource(id = R.drawable.vector_38),
             contentDescription = "Header Background Pic",
             tint = Color.Unspecified
         )
-
         Column {
             Column(
                 modifier = Modifier
@@ -85,7 +84,6 @@ fun AppHeader(user: User?, navController: NavController, title: String, default:
         }
     }
 }
-
 @Composable
 fun AppHeaderCore(user: User?, navController: NavController, title: String, default: Boolean, warning: Boolean) {
     var showBackConfirmationDialog by remember { mutableStateOf(false) }
@@ -125,6 +123,7 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
         ) {
             val context = LocalContext.current
 
+            // Fixed code for profile image
             if (user?.profilePicUrl != null) {
                 val imageResId = remember(user.profilePicUrl) {
                     context.resources.getIdentifier(user.profilePicUrl, "drawable", context.packageName)
@@ -140,16 +139,8 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                             .clip(CircleShape)
                             .background(Color.White)
                             .clickable {
-                                // Only navigate if user ID is valid and not null
-                                user.id?.let { userId ->
-                                    try {
-                                        // Use the proper route format and ensure the navigation graph contains this destination
-                                        navController.navigate(Destination.UserProfile.createRoute(userId.toString()))
-                                    } catch (e: Exception) {
-                                        Log.e("Navigation", "Failed to navigate to user profile: ${e.message}")
-                                        // Optionally handle the error (show toast, etc.)
-                                    }
-                                }
+
+                                navController.navigate(Destination.UserProfile.createRoute(user.id.toString()))
                             }
                     )
                 } else {
@@ -163,15 +154,10 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                             .clip(CircleShape)
                             .background(Color.White)
                             .clickable {
-                                // Only navigate if user ID is valid and not null
-                                user.id?.let { userId ->
-                                    try {
-                                        navController.navigate(Destination.UserProfile.createRoute(userId.toString()))
-                                    } catch (e: Exception) {
-                                        Log.e("Navigation", "Failed to navigate to user profile: ${e.message}")
-                                    }
-                                }
-                            }
+
+                                user?.id?.let { userId ->
+                                    navController.navigate(Destination.UserProfile.createRoute(userId.toString()))
+                                }  }
                     )
                 }
             } else {
@@ -185,19 +171,13 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                         .clip(CircleShape)
                         .background(Color.White)
                         .clickable {
-                            // Only navigate if user ID is valid and not null
                             user?.id?.let { userId ->
-                                try {
-                                    navController.navigate(Destination.UserProfile.createRoute(userId.toString()))
-                                } catch (e: Exception) {
-                                    Log.e("Navigation", "Failed to navigate to user profile: ${e.message}")
-                                }
+                                navController.navigate(Destination.UserProfile.createRoute(userId.toString()))
                             }
                         }
                 )
             }
 
-            // Rest of your code remains the same
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(
@@ -206,7 +186,7 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                     .weight(1f)
             ) {
                 Text(
-                    text = "Bienvenue" + user?.familyName,
+                    text = "Bienvenue",
                     color = Color(0xFF2B7A78),
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp
@@ -229,11 +209,7 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                     modifier = Modifier
                         .clickable() {
                             user?.id?.let { userId ->
-                                try {
-                                    navController.navigate(Destination.Notifications.createRoute(userId.toString()))
-                                } catch (e: Exception) {
-                                    Log.e("Navigation", "Failed to navigate to notifications: ${e.message}")
-                                }
+                                navController.navigate(Destination.Notifications.createRoute(userId.toString()))
                             }
                         }
                 )
@@ -269,7 +245,6 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
         )
     }
 }
-
 @Composable
 fun CustomHeader(title: String, warning: Boolean = false, onBackClick: () -> Unit) {
     Card(

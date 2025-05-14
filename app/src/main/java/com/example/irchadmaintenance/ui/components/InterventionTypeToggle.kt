@@ -63,7 +63,7 @@ fun InterventionTypeToggle(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Préventive",
+                    text = "Technique",
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
                     color = if (selectedType == InterventionType.PREVENTIVE) WhiteColor else GrayTextColor
@@ -78,7 +78,7 @@ fun InterventionTypeToggle(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Curative",
+                    text = "Non Technique",
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
                     color = if (selectedType == InterventionType.CURATIVE) WhiteColor else GrayTextColor

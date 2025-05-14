@@ -63,8 +63,12 @@ class AuthViewModel(
                 try {
                     val token = authRepository.getAuthToken().firstOrNull()
                     val userId = authRepository.getUserId().firstOrNull()
+                    val familyName = authRepository.getUserFamilyName().firstOrNull()
+                    val firstName = authRepository.getUserFirstName().firstOrNull()
+                    val email = authRepository.getUserEmail().firstOrNull()
 
-                    Log.d("AuthViewModel", "Token: ${token?.take(10)}..., UserId: $userId")
+                    Log.d("AuthViewModel", "Token: ${token?.take(10)}..., UserId: $userId, " +
+                            "FirstName: $firstName, FamilyName: $familyName")
 
                     if (!token.isNullOrEmpty() && !userId.isNullOrEmpty()) {
                         val isValid = try {
@@ -77,22 +81,20 @@ class AuthViewModel(
                         Log.d("AuthViewModel", "Token is valid: $isValid")
 
                         if (isValid) {
-                            // Fetch user details using stored data
-                            val familyName = authRepository.getUserFamilyName().firstOrNull() ?: ""
-                            val firstName = authRepository.getUserFirstName().firstOrNull() ?: ""
-                            val email = authRepository.getUserEmail().firstOrNull() ?: ""
-
-                            // Reconstruct the User object
+                            // Reconstruct the User object with all available data
                             val user = User(
-                                id = userId.toInt(),
+                                id = userId.toIntOrNull(),
                                 familyName = familyName,
                                 firstName = firstName,
                                 email = email,
-                                // Set other fields as necessary or fetch from API
+                                // Set other fields as necessary
                                 phoneNumber = null,
-
                                 userType = null
                             )
+
+                            // Log the constructed user object
+                            Log.d("AuthViewModel", "Constructed user: ${user.firstName} ${user.familyName}")
+
                             _user.value = user
                             _authState.value = AuthUIState.Authenticated(userId)
                         } else {
