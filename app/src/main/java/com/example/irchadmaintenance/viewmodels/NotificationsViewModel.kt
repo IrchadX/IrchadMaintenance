@@ -11,7 +11,6 @@ class NotificationsViewModel : ViewModel() {
     val notifications: List<Notification> = _notifications
 
     init {
-        // Initialize with sample data
         _notifications.addAll(NotificationSampleData.alerts)
     }
 

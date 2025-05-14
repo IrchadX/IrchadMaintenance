@@ -91,4 +91,15 @@ sealed class Destination(val route: String) {
             navArgument("interventionId") { type = NavType.StringType }
         )
     }
+
+    object AccountDetails : Destination("account_details/{userId}") {
+        fun createRoute(userId: String) : String {
+            return this.route.replace("{userId}", userId)
+        }
+
+        val arguments = listOf(
+            navArgument("userId") { type = NavType.StringType }
+        )
+    }
+
 }

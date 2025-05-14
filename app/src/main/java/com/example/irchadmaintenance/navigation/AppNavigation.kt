@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.ui.components.DeviceList
+import com.example.irchadmaintenance.ui.screens.AccountDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionDetailsScreen
@@ -111,6 +112,14 @@ fun AppNavigation(navController: NavHostController) {
                 interventionId = interventionId,
                 navController = navController
             )
+        }
+
+        composable(
+            route = Destination.AccountDetails.route,
+            arguments = Destination.AccountDetails.arguments
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            AccountDetailsScreen(userId = userId, navController = navController)
         }
 
     }
