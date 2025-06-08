@@ -8,7 +8,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
-// Data classes to perfectly match the JSON from the server
+
 @Serializable
 data class Coords(
     val latitude: Double,
@@ -42,7 +42,6 @@ class LocationWebSocketListener(
                 if (message.type == "location") {
                     val newLatLng = LatLng(message.coords.latitude, message.coords.longitude)
                     Log.d("WebSocket", "SUCCESS! Parsed location: $newLatLng")
-                    // Send the clean LatLng object to our ViewModel!
                     onLocationUpdate(newLatLng)
                 }
             } catch (e: Exception) {

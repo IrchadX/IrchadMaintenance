@@ -48,10 +48,10 @@ fun DeviceDetailsScreen(
     val user = UserSampleData.users.find { it.userId == userId }
     var showDiagnostics by remember { mutableStateOf(false) }
 
-    // Change 1: Get the live location state from the ViewModel
+    //////////////////////Change 1: Get the live location state from the ViewModel ////////
     val userLocation by viewModel.userLocation.collectAsState()
 
-    // Change 2: Use the final "start listening" function
+    /////////////////////Change 2: start listening for location /////////////////
     LaunchedEffect(Unit) {
         viewModel.startListeningForLocation()
     }
@@ -78,7 +78,7 @@ fun DeviceDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                // This section is unchanged
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -112,8 +112,10 @@ fun DeviceDetailsScreen(
                     )
                 }
 
-                // Change 3: Replace the hardcoded map with the live map/placeholder
+                ////////////////////////Change 3: Add the map ///////////////////////////////////
+
                 Spacer(modifier = Modifier.height(54.dp))
+
                 if (userLocation != null) {
                     OSMDroidMap(
                         location = "Localisation du client en temps réel",
@@ -136,11 +138,11 @@ fun DeviceDetailsScreen(
                 }
                 Spacer(modifier = Modifier.height(48.dp))
 
-                // This section is unchanged
+                /////////////////////////////////// the rest is the same ///////////////////////
+
                 DeviceInfoList(deviceId)
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // This Diagnostic section is now PRESERVED exactly as you had it
                 Button(
                     onClick = { showDiagnostics = !showDiagnostics },
                     colors = ButtonDefaults.buttonColors(
@@ -181,11 +183,6 @@ fun DeviceDetailsScreen(
                     )
                 }
 
-                // Change 4: The Test Button is now REMOVED
-                // (The spacer that was here is also removed)
-
-
-                // The "Intervenir" button and its spacer are PRESERVED
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = {
