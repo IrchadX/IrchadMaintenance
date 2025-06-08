@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -63,4 +64,12 @@ dependencies {
     /////////////// OSMDroid dependencies //////////////////////
     implementation("org.osmdroid:osmdroid-android:6.1.16")
 
+    /////////////////////// WEBSOCKET DEPENDENCIES //////////////////////
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    //////////////////////////JSON PARSING /////////////////////////////
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    ///////////////////// GOOGLE MAPS UTILITIES (LatLng) ///////////////////////
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }

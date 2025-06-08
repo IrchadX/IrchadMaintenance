@@ -6,6 +6,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.data.UserSampleData
@@ -32,13 +34,27 @@ import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.ui.components.AppHeader
 import com.example.irchadmaintenance.ui.components.DeviceInfoList
 import com.example.irchadmaintenance.ui.components.DiagnosticInfo
+import com.example.irchadmaintenance.ui.components.OSMDroidMap
+import com.example.irchadmaintenance.viewmodels.DeviceDetailsViewModel
 
 @Composable
-fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavController) {
+fun DeviceDetailsScreen(
+    userId: String,
+    deviceId: String,
+    navController: NavController,
+    viewModel: DeviceDetailsViewModel = viewModel()
+) {
     val device = SampleData.devices.find { it.id == deviceId }
     val user = UserSampleData.users.find { it.userId == userId }
     var showDiagnostics by remember { mutableStateOf(false) }
 
+    // Change 1: Get the live location state from the ViewModel
+    val userLocation by viewModel.userLocation.collectAsState()
+
+    // Change 2: Use the final "start listening" function
+    LaunchedEffect(Unit) {
+        viewModel.startListeningForLocation()
+    }
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (showDiagnostics) 180f else 0f,
@@ -62,6 +78,7 @@ fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavCon
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
+                // This section is unchanged
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -86,9 +103,7 @@ fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavCon
                             )
                         }
                     }
-
                     Spacer(modifier = Modifier.height(12.dp))
-
                     Text(
                         text = device.name,
                         fontSize = 22.3.sp,
@@ -97,13 +112,35 @@ fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavCon
                     )
                 }
 
+                // Change 3: Replace the hardcoded map with the live map/placeholder
                 Spacer(modifier = Modifier.height(54.dp))
+                if (userLocation != null) {
+                    OSMDroidMap(
+                        location = "Localisation du client en temps réel",
+                        latitude = userLocation!!.latitude,
+                        longitude = userLocation!!.longitude
+                    )
+                } else {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(216.dp)
+                        .background(Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(color = Color(0xFF3AAFA9))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("En attente de la localisation du client...")
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(48.dp))
 
+                // This section is unchanged
                 DeviceInfoList(deviceId)
+                Spacer(modifier = Modifier.height(40.dp))
 
-                Spacer(modifier = Modifier.height(105.dp))
-
-
+                // This Diagnostic section is now PRESERVED exactly as you had it
                 Button(
                     onClick = { showDiagnostics = !showDiagnostics },
                     colors = ButtonDefaults.buttonColors(
@@ -144,8 +181,12 @@ fun DeviceDetailsScreen(userId : String, deviceId: String, navController: NavCon
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                // Change 4: The Test Button is now REMOVED
+                // (The spacer that was here is also removed)
 
+
+                // The "Intervenir" button and its spacer are PRESERVED
+                Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = {
                         navController.navigate(
