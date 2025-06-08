@@ -1,4 +1,5 @@
 package com.example.irchadmaintenance.navigation
+
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,9 +25,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.irchadmaintenance.repository.DeviceRepository
 import com.example.irchadmaintenance.repository.InterventionRepository
 import com.example.irchadmaintenance.state.AuthUIState
+import com.example.irchadmaintenance.ui.components.BottomNavigationBar
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
+import com.example.irchadmaintenance.ui.screens.InterventionDetailsScreen
 import com.example.irchadmaintenance.ui.screens.InterventionScreen
+import com.example.irchadmaintenance.ui.screens.InterventionsListScreen
 import com.example.irchadmaintenance.ui.screens.NotificationDetailsScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.SignInScreen
@@ -72,7 +77,7 @@ fun AppNavigation(
                     }
                 }
             }
-            else -> {} // Handle other states as needed
+            else -> {}
         }
     }
 
@@ -82,11 +87,10 @@ fun AppNavigation(
         navController = navController,
         startDestination = startDestination
     ) {
-        // Loading screen as the initial destination
+
         composable(Destination.Loading.route) {
             LoadingScreen()
 
-            // This LaunchedEffect ensures we react to the auth state from the loading screen
             LaunchedEffect(authState) {
                 when (authState) {
                     is AuthUIState.Authenticated -> {
@@ -102,12 +106,11 @@ fun AppNavigation(
                             popUpTo(Destination.Loading.route) { inclusive = true }
                         }
                     }
-                    else -> {} // Keep showing loading screen for AuthUIState.Loading
+                    else -> {}
                 }
             }
         }
 
-        // Authentication screens
         composable(Destination.SignIn.route) {
             SignInScreen(
                 navController = navController,
@@ -118,7 +121,6 @@ fun AppNavigation(
         composable(Destination.DeviceList.route) {
             val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
 
-            // Only load devices if we have a valid userId
             if (userId.isNotEmpty()) {
                 LaunchedEffect(key1 = userId) {
                     try {
@@ -131,7 +133,8 @@ fun AppNavigation(
 
             ContentScreenWithNavBar(
                 navController = navController,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                userId = userId
             ) {
                 DevicesScreen(
                     userId = userId,
@@ -148,15 +151,17 @@ fun AppNavigation(
             }
         }
 
-        // Rest of your navigation definitions...
         composable(
             route = Destination.DeviceDetails.route,
             arguments = Destination.DeviceDetails.arguments
         ) { backStackEntry ->
             val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
+            val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
+
             ContentScreenWithNavBar(
                 navController = navController,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                userId = userId
             ) {
                 DeviceDetailsScreen(
                     deviceId = deviceId,
@@ -168,14 +173,34 @@ fun AppNavigation(
         }
 
         composable(
+            route = Destination.InterventionsList.route,
+            arguments = Destination.InterventionsList.arguments
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            ContentScreenWithNavBar(
+                navController = navController,
+                currentRoute = currentRoute,
+                userId = userId
+            ) {
+                InterventionsListScreen(
+                    userId = userId,
+                    navController = navController,
+                    viewModel = interventionViewModel,
+                    authViewModel = authViewModel
+                )
+            }
+        }
+
+        composable(
             route = Destination.Interventions.route,
             arguments = Destination.Interventions.arguments
         ) { backStackEntry ->
+            val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
             ContentScreenWithNavBar(
                 navController = navController,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                userId = userId
             ) {
-                val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
                 InterventionScreen(
                     userId = userId,
                     navController = navController,
@@ -189,11 +214,12 @@ fun AppNavigation(
             route = Destination.Notifications.route,
             arguments = Destination.Notifications.arguments
         ) { backStackEntry ->
+            val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
             ContentScreenWithNavBar(
                 navController = navController,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                userId = userId
             ) {
-                val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
                 NotificationsScreen(
                     userId = userId,
                     navController = navController,
@@ -206,18 +232,64 @@ fun AppNavigation(
             route = Destination.NotificationDetails.route,
             arguments = Destination.NotificationDetails.arguments
         ) { backStackEntry ->
+            val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
+            val notificationId = backStackEntry.arguments?.getInt("notificationId") ?: 0
+            val deviceId = backStackEntry.arguments?.getInt("deviceId") ?: 0
             ContentScreenWithNavBar(
                 navController = navController,
-                currentRoute = currentRoute
+                currentRoute = currentRoute,
+                userId = userId
             ) {
-                val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
-                val notificationId = backStackEntry.arguments?.getInt("notificationId") ?: 0
-                val deviceId = backStackEntry.arguments?.getInt("deviceId") ?: 0
                 NotificationDetailsScreen(
                     userId = userId,
                     notificationId = notificationId,
                     deviceId = deviceId,
                     navController = navController,
+                    authViewModel = authViewModel
+                )
+            }
+        }
+
+        composable(
+            route = Destination.UserProfile.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("userId") {
+                    type = androidx.navigation.NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            ContentScreenWithNavBar(
+                navController = navController,
+                currentRoute = currentRoute,
+                userId = userId
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("User Profile Screen - Coming Soon")
+                }
+            }
+        }
+
+        // FIXED: Moved InterventionDetails composable inside NavHost
+        composable(
+            route = Destination.InterventionDetails.route,
+            arguments = Destination.InterventionDetails.arguments
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            val interventionId = backStackEntry.arguments?.getString("interventionId") ?: ""
+            ContentScreenWithNavBar(
+                navController = navController,
+                currentRoute = currentRoute,
+                userId = userId
+            ) {
+                InterventionDetailsScreen(
+                    userId = userId,
+                    interventionId = interventionId,
+                    navController = navController,
+                    viewModel = interventionViewModel,
                     authViewModel = authViewModel
                 )
             }
@@ -229,10 +301,47 @@ fun AppNavigation(
 fun ContentScreenWithNavBar(
     navController: NavHostController,
     currentRoute: String?,
+    userId: String,
     content: @Composable () -> Unit
 ) {
-    Scaffold(
+    // Define routes that should show the bottom navigation
+    val routesWithBottomNav = listOf(
+        Destination.DeviceList.route,
+        "device_details/{deviceId}",
+        "add_interventions/{userId}/{deviceId}",
+        "interventions_list/{userId}",
+        "intervention_details/{userId}/{interventionId}",
+        "user_profile/{userId}",
+        "notifications/{userId}",
+        "notification_details/{userId}/{notificationId}/{deviceId}"
+    )
 
+    val shouldShowBottomNav = currentRoute?.let { route ->
+        routesWithBottomNav.any { navRoute ->
+            // Check if current route matches any of the nav routes (considering parameters)
+            when {
+                route.startsWith("device_list") -> true
+                route.startsWith("device_details") -> true
+                route.startsWith("add_interventions") -> true
+                route.startsWith("interventions_list") -> true
+                route.startsWith("intervention_details") -> true
+                route.startsWith("user_profile") -> true
+                route.startsWith("notifications") -> true
+                route.startsWith("notification_details") -> true
+                else -> false
+            }
+        }
+    } ?: false
+
+    Scaffold(
+        bottomBar = {
+            if (shouldShowBottomNav && userId.isNotEmpty()) {
+                BottomNavigationBar(
+                    navController = navController,
+                    userId = userId
+                )
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier

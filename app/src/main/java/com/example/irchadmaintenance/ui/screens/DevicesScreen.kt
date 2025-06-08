@@ -68,7 +68,7 @@ fun DevicesScreen(
             authViewModel = authViewModel
         )
 
-        // Add this to show loading and error states
+
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()

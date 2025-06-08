@@ -69,4 +69,28 @@ sealed class Destination(val route: String) {
             navArgument("deviceId") { type = NavType.IntType }
         )
     }
+
+    object InterventionsList : Destination("interventions_list/{userId}") {
+        fun createRoute(userId: String): String {
+            return "interventions_list/$userId"
+        }
+
+        val arguments = listOf(
+            navArgument("userId") { type = NavType.StringType }
+        )
+    }
+
+    // ADD THIS: Missing InterventionDetails destination
+    object InterventionDetails : Destination("intervention_details/{userId}/{interventionId}") {
+        fun createRoute(userId: String, interventionId: String): String {
+            return this.route
+                .replace("{userId}", userId)
+                .replace("{interventionId}", interventionId)
+        }
+
+        val arguments = listOf(
+            navArgument("userId") { type = NavType.StringType },
+            navArgument("interventionId") { type = NavType.StringType }
+        )
+    }
 }

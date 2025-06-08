@@ -61,6 +61,32 @@ class InterventionViewModel(private val repository: InterventionRepository) : Vi
         }
     }
 
+    suspend fun getInterventionById(id: Int): Intervention {
+        return try {
+            repository.getInterventionById(id)
+        } catch (e: Exception) {
+            Log.e("InterventionViewModel", "Error loading intervention by id", e)
+            throw e
+        }
+    }
+
+    suspend fun updateIntervention(id: Int, title: String, description: String): Intervention {
+        return try {
+            repository.updateIntervention(id, title, description)
+        } catch (e: Exception) {
+            Log.e("InterventionViewModel", "Error updating intervention", e)
+            throw e
+        }
+    }
+    suspend fun deleteIntervention(id: Int): Boolean {
+        return try {
+            repository.deleteIntervention(id)
+        } catch (e: Exception) {
+            Log.e("InterventionViewModel", "Error deleting intervention", e)
+            throw e
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun createIntervention(
         userId: Int,

@@ -5,6 +5,7 @@ import com.example.irchadmaintenance.api.Client
 import com.example.irchadmaintenance.data.models.CreateInterventionDto
 import com.example.irchadmaintenance.data.models.Intervention
 import com.example.irchadmaintenance.data.models.InterventionApiModel
+import com.example.irchadmaintenance.data.models.UpdateInterventionDto
 import com.example.irchadmaintenance.ui.screens.InterventionType
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -27,6 +28,22 @@ class InterventionRepository {
         return apiService.getInterventionById(id).toIntervention()
     }
 
+    suspend fun updateIntervention(id: Int, title: String, description: String): Intervention {
+        try {
+            // FIXED: Use specific DTO instead of Map
+            val updateDto = UpdateInterventionDto(
+                title = title,
+                description = description
+            )
+            val response = apiService.updateIntervention(id, updateDto)
+            Log.d("InterventionRepository", "Updated intervention: $response")
+            return response.toIntervention()
+        } catch (e: Exception) {
+            Log.e("InterventionRepository", "Error updating intervention", e)
+            throw e
+        }
+    }
+
     suspend fun createIntervention(
         userId: Int,
         scheduledDate: LocalDate,
@@ -45,7 +62,7 @@ class InterventionRepository {
             val date = Date.from(scheduledDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
 
             val createDto = CreateInterventionDto(
-                device_id =  deviceId, // Can be updated if needed
+                device_id = deviceId,
                 maintenancier_id = userId,
                 scheduled_date = date,
                 description = description,
@@ -63,7 +80,16 @@ class InterventionRepository {
             throw e
         }
     }
-
+    suspend fun deleteIntervention(id: Int): Boolean {
+        return try {
+            val response = apiService.deleteIntervention(id)
+            Log.d("InterventionRepository", "Deleted intervention with ID: $id")
+            response.isSuccessful
+        } catch (e: Exception) {
+            Log.e("InterventionRepository", "Error deleting intervention", e)
+            throw e
+        }
+    }
     suspend fun completeIntervention(id: Int): Intervention {
         return apiService.completeIntervention(id).toIntervention()
     }

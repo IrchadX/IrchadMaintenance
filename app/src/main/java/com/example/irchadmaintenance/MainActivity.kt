@@ -1,6 +1,5 @@
 package com.example.irchadmaintenance
 
-
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -22,8 +21,8 @@ import com.example.irchadmaintenance.repository.AuthRepository
 import com.example.irchadmaintenance.repository.UserRepository
 import com.example.irchadmaintenance.ui.theme.IRCHADMaintenanceTheme
 import com.example.irchadmaintenance.viewmodels.AuthViewModel
-
 import com.example.irchadmaintenance.viewmodels.UserViewModel
+import com.example.irchadmaintenance.websocket.WebSocketManager
 
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher =
@@ -45,15 +44,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun setupWebSocket() {
+        val raspberryPiIp = "192.168.39.121"
+        WebSocketManager.initialize(applicationContext, raspberryPiIp)
+
+        WebSocketManager.connect { notification ->
+            runOnUiThread {
+                NotificationHelper.showNotification(
+                    this,
+                    notification.title,
+                    notification.message
+                )
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize AuthViewModel with application context
         AuthViewModel.initialize(applicationContext)
-
         NotificationHelper.createNotificationChannel(this)
         askNotificationPermission()
+        setupWebSocket()
         enableEdgeToEdge()
 
         setContent {
@@ -62,14 +75,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Create and remember a navigation controller
                     val navController = rememberNavController()
-
-                    // Initialize view models
                     val authViewModel = AuthViewModel(AuthRepository(applicationContext))
                     val userViewModel = UserViewModel(UserRepository(applicationContext))
 
-                    // Use our navigation component with properly initialized view models
                     AppNavigation(
                         navController = navController,
                         authViewModel = authViewModel,
@@ -78,5 +87,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        WebSocketManager.disconnect()
     }
 }
