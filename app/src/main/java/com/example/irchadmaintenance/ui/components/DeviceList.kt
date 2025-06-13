@@ -16,6 +16,7 @@ fun DeviceList(devices: List<Device>, onDeviceClick: (String) -> Unit) {
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
+
     ) {
         items(devices) { device ->
             DeviceCard(device = device, onCardClick = onDeviceClick)

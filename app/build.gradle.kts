@@ -85,4 +85,15 @@ dependencies {
     implementation ("io.socket:socket.io-client:2.1.0")
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    /////////////// OSMDroid dependencies //////////////////////
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
+
+    /////////////////////// WEBSOCKET DEPENDENCIES //////////////////////
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    //////////////////////////JSON PARSING /////////////////////////////
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    ///////////////////// GOOGLE MAPS UTILITIES (LatLng) ///////////////////////
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }

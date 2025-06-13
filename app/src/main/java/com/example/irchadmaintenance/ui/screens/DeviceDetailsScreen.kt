@@ -7,6 +7,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +36,7 @@ import com.example.irchadmaintenance.ui.components.DiagnosticInfo
 import com.example.irchadmaintenance.viewmodels.DeviceViewModel
 import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
 import com.example.irchadmaintenance.state.AuthUIState
+import com.example.irchadmaintenance.ui.components.OSMDroidMap
 import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 
@@ -50,6 +52,7 @@ fun DeviceDetailsScreen(
     var showDiagnostics by remember { mutableStateOf(false) }
     var diagnosticData by remember { mutableStateOf<DeviceDiagnosticApiModel?>(null) }
     var isLoadingDiagnostic by remember { mutableStateOf(false) }
+    val userLocation by viewModel.userLocation.collectAsState()
 
 
     val rotationAngle by animateFloatAsState(
@@ -63,6 +66,7 @@ fun DeviceDetailsScreen(
             val numericId = deviceId.toIntOrNull()
             if (numericId != null) {
                 device = viewModel.loadDeviceById(numericId)
+                viewModel.startListeningForLocation()
             }
         } catch (e: Exception) {
             Log.e("DeviceDetailsScreen", "Failed to load device details", e)
@@ -144,7 +148,29 @@ fun DeviceDetailsScreen(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(54.dp))
 
+                if (userLocation != null) {
+                    OSMDroidMap(
+                        location = "Localisation du client en temps réel",
+                        latitude = userLocation!!.latitude,
+                        longitude = userLocation!!.longitude
+                    )
+                } else {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(216.dp)
+                        .background(Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(color = Color(0xFF3AAFA9))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("En attente de la localisation du client...")
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(48.dp))
 
                 DeviceDetailsInfo(currentDevice)
 

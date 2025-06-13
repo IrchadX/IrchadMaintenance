@@ -298,9 +298,10 @@ fun InterventionDetailsScreen(
 
                     if (isInMaintenance) {
                         if (isEditing) {
+                            // Edit mode buttons
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Button(
                                     onClick = {
@@ -309,11 +310,19 @@ fun InterventionDetailsScreen(
                                         isEditing = false
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Gray
+                                        containerColor = Color(0xFF95A5A6)
                                     ),
-                                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
                                 ) {
-                                    Text("Annuler")
+                                    Text(
+                                        text = "Annuler",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White
+                                    )
                                 }
 
                                 Button(
@@ -321,50 +330,117 @@ fun InterventionDetailsScreen(
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color(0xFF2B7A78)
                                     ),
-                                    modifier = Modifier.weight(1f).padding(start = 8.dp)
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
                                 ) {
-                                    Text("Enregistrer")
+                                    Text(
+                                        text = "Enregistrer",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White
+                                    )
                                 }
                             }
                         } else {
-                            Row(
+                            // Action buttons
+                            Column(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Button(
-                                    onClick = { showDeleteDialog = true },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFE53935)
-                                    ),
-                                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                                // First row: Annuler and Modifier
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    Icon(Icons.Default.Close, contentDescription = "Delete")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Annuler")
+                                    Button(
+                                        onClick = { showDeleteDialog = true },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFFE53935)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(56.dp),
+                                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Close,
+                                                contentDescription = "Annuler",
+                                                tint = Color.White
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = "Annuler",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = Color.White
+                                            )
+                                        }
+                                    }
+
+                                    Button(
+                                        onClick = { isEditing = true },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF2B7A78)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(56.dp),
+                                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Edit,
+                                                contentDescription = "Modifier",
+                                                tint = Color.White
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = "Modifier",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = Color.White
+                                            )
+                                        }
+                                    }
                                 }
 
-                                Button(
-                                    onClick = { isEditing = true },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF2B7A78)
-                                    ),
-                                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
-                                ) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Modifier")
-                                }
-
+                                // Second row: Terminer (full width)
                                 Button(
                                     onClick = { completeIntervention() },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF008D38)
+                                        containerColor = Color(0xFF27AE60)
                                     ),
-                                    modifier = Modifier.weight(1f).padding(start = 8.dp)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                                 ) {
-                                    Icon(Icons.Default.Check, contentDescription = "Complete")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Terminer")
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Check,
+                                            contentDescription = "Terminer",
+                                            tint = Color.White
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Terminer",
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -373,10 +449,13 @@ fun InterventionDetailsScreen(
                             text = "Cette intervention est terminée",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
-                            color = Color(0xFF008D38),
+                            color = Color(0xFF27AE60),
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                     }
+
+                    // Small bottom spacing for visual comfort
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -389,11 +468,15 @@ fun InterventionDetailsScreen(
             title = {
                 Text(
                     text = "Confirmer la suppression",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
                 )
             },
             text = {
-                Text("Êtes-vous sûr de vouloir supprimer cette intervention ? Cette action est irréversible.")
+                Text(
+                    text = "Êtes-vous sûr de vouloir supprimer cette intervention ? Cette action est irréversible.",
+                    fontSize = 16.sp
+                )
             },
             confirmButton = {
                 Button(
@@ -405,17 +488,27 @@ fun InterventionDetailsScreen(
                         containerColor = Color(0xFFE53935)
                     )
                 ) {
-                    Text("Oui", color = Color.White)
+                    Text(
+                        text = "Oui",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             dismissButton = {
                 Button(
                     onClick = { showDeleteDialog = false },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Gray
+                        containerColor = Color(0xFF95A5A6)
                     )
                 ) {
-                    Text("Non", color = Color.White)
+                    Text(
+                        text = "Non",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         )

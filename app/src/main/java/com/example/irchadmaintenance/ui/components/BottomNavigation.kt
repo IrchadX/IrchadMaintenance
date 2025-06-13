@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,16 +87,17 @@ fun BottomNavigationBar(
 
     Row(
         modifier = Modifier
-            .padding(16.dp)
+            .fillMaxWidth()
+            .navigationBarsPadding()
             .shadow(
                 elevation = 10.dp,
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp), // Only round top corners
                 ambientColor = Color(0x0F20845A),
                 spotColor = Color(0x0F20845A)
             )
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)) // Only round top corners
             .background(Color(0xFFEFF7F6))
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp), // Adjust padding for better spacing
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -150,4 +153,5 @@ fun BottomNavigationBar(
             }
         }
     }
+
 }

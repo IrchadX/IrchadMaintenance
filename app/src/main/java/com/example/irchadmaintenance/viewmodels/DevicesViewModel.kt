@@ -8,8 +8,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.irchadmaintenance.data.Device
 import com.example.irchadmaintenance.data.models.DeviceDiagnosticApiModel
+import com.example.irchadmaintenance.network.LocationWebSocketListener
 import com.example.irchadmaintenance.repository.DeviceRepository
+import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocket
 
 class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
     private val _devices = mutableStateListOf<Device>()
@@ -78,7 +85,31 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
             return null
         }
     }
+    private val _userLocation = MutableStateFlow<LatLng?>(null)
+    val userLocation = _userLocation.asStateFlow()
 
+    private val client = OkHttpClient()
+    private var webSocket: WebSocket? = null
+
+    fun startListeningForLocation() {
+        if (webSocket != null) return
+
+        val serverUrl = "wss://websocket-production-1b56.up.railway.app/"
+        val request = Request.Builder().url(serverUrl).build()
+
+        val listener = LocationWebSocketListener { newLocation ->
+            _userLocation.value = newLocation
+        }
+
+        Log.d("ViewModel", "Connecting to WebSocket for LIVE location updates...")
+        webSocket = client.newWebSocket(request, listener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("ViewModel", "Closing WebSocket connection.")
+        webSocket?.close(1000, "Screen closed")
+    }
 
     fun refreshDevices(userId: Int) {
         loadDevicesForUser(userId)

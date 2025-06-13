@@ -58,7 +58,8 @@ fun DevicesScreen(
         matchesSearch && matchesStatus
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()
+    ) {
         AppHeader(
             user = user, // Use the authenticated user
             navController = navController,
