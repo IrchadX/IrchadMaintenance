@@ -76,7 +76,8 @@ fun SignInScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header with IRCHAD logo
@@ -97,7 +98,8 @@ fun SignInScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(100.dp), // Adjust height to your need
+                            .height(100.dp),
+
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -116,6 +118,7 @@ fun SignInScreen(
                     .fillMaxWidth()
                     .padding(top = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
+
             ) {
 
                 Text(
