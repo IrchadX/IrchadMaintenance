@@ -70,6 +70,7 @@ fun AccountScreen(
     val context = LocalContext.current
 
     val sheetState = rememberModalBottomSheetState()
+    val passwordModalScrollState = rememberScrollState() // Add scroll state for password modal
 
     var firstName by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
@@ -170,9 +171,10 @@ fun AccountScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(top = 120.dp)
+                .padding(innerPadding)
+                .padding(top = 16.dp)
                 .padding(horizontal = 24.dp)
-                //.background(Color.White)
+            //.background(Color.White)
         ) {
 
 
@@ -406,211 +408,209 @@ fun AccountScreen(
         }
     }
 
-    Box(modifier = Modifier.padding()) {
-        if (showPasswordDialog.value) {
-            ModalBottomSheet(
-                onDismissRequest = { showPasswordDialog.value = false },
-                sheetState = sheetState,
-                containerColor = Color.White
+    // Password Change Modal with Scrolling
+    if (showPasswordDialog.value) {
+        ModalBottomSheet(
+            onDismissRequest = { showPasswordDialog.value = false },
+            sheetState = sheetState,
+            containerColor = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 400.dp, max = 600.dp) // Set min and max height
+                    .verticalScroll(passwordModalScrollState) // Add vertical scrolling
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                ModalBottomSheet(
-                    onDismissRequest = { showPasswordDialog.value = false },
-                    sheetState = sheetState,
-                    containerColor = Color.White
+                // Title for the modal
+                Text(
+                    text = "Change Password",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(
+                    Text(
+                        text = "Current password",
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = currentPassword,
+                        onValueChange = { currentPassword = it },
+                        placeholder = { Text("At least 8 characters") },
+                        visualTransformation = if (currentPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "Password",
+                                tint = Color.Gray
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                currentPasswordVisible = !currentPasswordVisible
+                            }) {
+                                Icon(
+                                    imageVector = if (currentPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (currentPasswordVisible) "Hide password" else "Show password",
+                                    tint = Color.Gray
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.LightGray,
+                            unfocusedBorderColor = Color.LightGray,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 520.dp)
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Current password",
-                                    fontSize = 16.sp,
-                                    color = Color.DarkGray,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-
-                                OutlinedTextField(
-                                    value = currentPassword,
-                                    onValueChange = { currentPassword = it },
-                                    placeholder = { Text("At least 8 characters") },
-                                    visualTransformation = if (currentPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Lock,
-                                            contentDescription = "Password",
-                                            tint = Color.Gray
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        IconButton(onClick = {
-                                            currentPasswordVisible = !currentPasswordVisible
-                                        }) {
-                                            Icon(
-                                                imageVector = if (currentPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                                contentDescription = if (currentPasswordVisible) "Hide password" else "Show password",
-                                                tint = Color.Gray
-                                            )
-                                        }
-                                    },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = Color.LightGray,
-                                        unfocusedBorderColor = Color.LightGray,
-                                        focusedContainerColor = Color.White,
-                                        unfocusedContainerColor = Color.White
-                                    ),
-                                    shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "New password",
-                                    fontSize = 16.sp,
-                                    color = Color.DarkGray,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-
-                                OutlinedTextField(
-                                    value = newPassword,
-                                    onValueChange = { newPassword = it },
-                                    placeholder = { Text("At least 8 characters") },
-                                    visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Lock,
-                                            contentDescription = "confirm Password",
-                                            tint = Color.Gray
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        IconButton(onClick = {
-                                            newPasswordVisible = !newPasswordVisible
-                                        }) {
-                                            Icon(
-                                                imageVector = if (newPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                                contentDescription = if (newPasswordVisible) "Hide password" else "Show password",
-                                                tint = Color.Gray
-                                            )
-                                        }
-                                    },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = Color.LightGray,
-                                        unfocusedBorderColor = Color.LightGray,
-                                        focusedContainerColor = Color.White,
-                                        unfocusedContainerColor = Color.White
-                                    ),
-                                    shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Confirm new password",
-                                    fontSize = 16.sp,
-                                    color = Color.DarkGray,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
-
-                                OutlinedTextField(
-                                    value = confirmNewPassword,
-                                    onValueChange = { confirmNewPassword = it },
-                                    placeholder = { Text("At least 8 characters") },
-                                    visualTransformation = if (confirmNewPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Lock,
-                                            contentDescription = "confirm Password",
-                                            tint = Color.Gray
-                                        )
-                                    },
-                                    trailingIcon = {
-                                        IconButton(onClick = {
-                                            confirmNewPasswordVisible = !confirmNewPasswordVisible
-                                        }) {
-                                            Icon(
-                                                imageVector = if (confirmNewPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                                contentDescription = if (confirmNewPasswordVisible) "Hide password" else "Show password",
-                                                tint = Color.Gray
-                                            )
-                                        }
-                                    },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = Color.LightGray,
-                                        unfocusedBorderColor = Color.LightGray,
-                                        focusedContainerColor = Color.White,
-                                        unfocusedContainerColor = Color.White
-                                    ),
-                                    shape = RoundedCornerShape(12.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-                            Button(
-
-                                onClick = {
-                                    user?.id?.let { userId ->
-                                        userviewModel.changePassword(
-                                            userId,
-                                            currentPassword,
-                                            newPassword,
-                                            confirmNewPassword
-                                        )
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF4A8F8F)
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = "Save changes",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-
-                            }
-
-                        }
-
-                    }
+                            .height(56.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "New password",
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = newPassword,
+                        onValueChange = { newPassword = it },
+                        placeholder = { Text("At least 8 characters") },
+                        visualTransformation = if (newPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "confirm Password",
+                                tint = Color.Gray
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                newPasswordVisible = !newPasswordVisible
+                            }) {
+                                Icon(
+                                    imageVector = if (newPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (newPasswordVisible) "Hide password" else "Show password",
+                                    tint = Color.Gray
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.LightGray,
+                            unfocusedBorderColor = Color.LightGray,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Confirm new password",
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = confirmNewPassword,
+                        onValueChange = { confirmNewPassword = it },
+                        placeholder = { Text("At least 8 characters") },
+                        visualTransformation = if (confirmNewPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "confirm Password",
+                                tint = Color.Gray
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                confirmNewPasswordVisible = !confirmNewPasswordVisible
+                            }) {
+                                Icon(
+                                    imageVector = if (confirmNewPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (confirmNewPasswordVisible) "Hide password" else "Show password",
+                                    tint = Color.Gray
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.LightGray,
+                            unfocusedBorderColor = Color.LightGray,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = {
+                        user?.id?.let { userId ->
+                            userviewModel.changePassword(
+                                userId,
+                                currentPassword,
+                                newPassword,
+                                confirmNewPassword
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4A8F8F)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Save changes",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                // Add some bottom padding for better scrolling experience
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

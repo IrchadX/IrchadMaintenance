@@ -193,7 +193,7 @@ fun AppHeaderCore(user: User?, navController: NavController, title: String, defa
                 )
                 Text(
                     text = "${user?.firstName ?: ""} ${user?.familyName ?: ""}".trim()
-                        .ifEmpty { "User" },
+                        .ifEmpty { "Lili Doe" },
                     color = Color.Black,
                     fontSize = 16.sp
                 )
