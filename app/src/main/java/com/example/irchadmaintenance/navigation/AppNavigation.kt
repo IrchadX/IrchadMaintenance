@@ -27,6 +27,7 @@ import com.example.irchadmaintenance.repository.DeviceRepository
 import com.example.irchadmaintenance.repository.InterventionRepository
 import com.example.irchadmaintenance.state.AuthUIState
 import com.example.irchadmaintenance.ui.components.BottomNavigationBar
+import com.example.irchadmaintenance.ui.screens.AccountScreen
 import com.example.irchadmaintenance.ui.screens.DeviceDetailsScreen
 import com.example.irchadmaintenance.ui.screens.DevicesScreen
 import com.example.irchadmaintenance.ui.screens.InterventionDetailsScreen
@@ -35,6 +36,7 @@ import com.example.irchadmaintenance.ui.screens.InterventionsListScreen
 import com.example.irchadmaintenance.ui.screens.NotificationDetailsScreen
 import com.example.irchadmaintenance.ui.screens.NotificationsScreen
 import com.example.irchadmaintenance.ui.screens.SignInScreen
+import com.example.irchadmaintenance.ui.screens.UserProfileScreen
 import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import com.example.irchadmaintenance.viewmodels.DeviceViewModel
 import com.example.irchadmaintenance.viewmodels.InterventionViewModel
@@ -265,12 +267,13 @@ fun AppNavigation(
                 currentRoute = currentRoute,
                 userId = userId
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("User Profile Screen - Coming Soon")
-                }
+                UserProfileScreen(
+                    userId = userId,
+                    navController = navController,
+                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
+                    onSignOut = { authViewModel.signOut() }
+                )
             }
         }
 
@@ -292,6 +295,21 @@ fun AppNavigation(
                     navController = navController,
                     viewModel = interventionViewModel,
                     authViewModel = authViewModel
+                )
+            }
+        }
+
+        composable(Destination.Account.route) {
+            val userId = (authState as? AuthUIState.Authenticated)?.userId ?: ""
+            ContentScreenWithNavBar(
+                navController = navController,
+                currentRoute = currentRoute,
+                userId = userId
+            ) {
+                AccountScreen(
+                    navController = navController,
+                    userviewModel = userViewModel,
+                    authviewModel = authViewModel
                 )
             }
         }

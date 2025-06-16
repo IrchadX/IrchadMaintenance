@@ -11,7 +11,7 @@ sealed class Destination(val route: String) {
     object SignIn : Destination("signin")
     object SignUp : Destination("signup")
     object Loading : Destination("loading")
-    object Account : Destination("account")
+    data object Account : Destination("account")
 
     // Main app routes
     object DeviceList : Destination("device_list")

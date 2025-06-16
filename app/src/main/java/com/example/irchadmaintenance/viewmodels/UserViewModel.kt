@@ -40,77 +40,8 @@ class UserViewModel(
     }
 
 
-    fun loadUsersForHelper(helperId: String) {
-        viewModelScope.launch {
-            _usersState.value = UsersState.Loading
 
-            try {
-                val result = userRepository.getUsersForHelper(helperId)
-                result.fold(
-                    onSuccess = { users ->
-                        _usersState.value = if (users.isEmpty()) {
-                            UsersState.Empty
-                        } else {
-                            UsersState.Success(users)
-                        }
-                    },
-                    onFailure = { error ->
-                        _usersState.value = UsersState.Error(error.message ?: "Unknown error")
-                    }
-                )
-            } catch (e: Exception) {
-                _usersState.value = UsersState.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
-    fun loadUserRequestsForHelper(helperId: String) {
-        viewModelScope.launch {
-            _usersState.value = UsersState.Loading
 
-            try {
-                val result = userRepository.getPendingRequestsForHelper(helperId)
-                result.fold(
-                    onSuccess = { users ->
-                        _usersState.value = if (users.isEmpty()) {
-                            UsersState.Empty
-                        } else {
-                            UsersState.Success(users)
-                        }
-                    },
-                    onFailure = { error ->
-                        _usersState.value = UsersState.Error(error.message ?: "Unknown error")
-                    }
-                )
-            } catch (e: Exception) {
-                _usersState.value = UsersState.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
-    fun acceptRequest(id: Int) {
-        viewModelScope.launch {
-            try {
-                userRepository.acceptRequest(id)
-
-                val currentUserId = _user.value?.id
-                currentUserId?.let { loadUserRequestsForHelper(it.toString()) }
-            } catch (e: Exception) {
-                // Handle error (log, state update, etc.)
-            }
-        }
-    }
-
-    fun declineRequest(id: Int) {
-        viewModelScope.launch {
-            try {
-                userRepository.declineRequest(id)
-                // Refresh the list after declining
-                val currentUserId = _user.value?.id
-                currentUserId?.let { loadUserRequestsForHelper(it.toString()) }
-            } catch (e: Exception) {
-                // Handle error
-            }
-        }
-    }
 
     private val _passwordChangeState = MutableStateFlow<PasswordChangeState>(PasswordChangeState.Idle)
     val passwordChangeState: StateFlow<PasswordChangeState> = _passwordChangeState.asStateFlow()

@@ -25,35 +25,7 @@ class UserRepository(private val context: Context) {
         }
     }
 
-    suspend fun getUsersForHelper(helperId: String): Result<List<HelperUser>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = usersApi.getUsersForHelper(helperId)
-                Result.success(response.data)
-            } catch (e: HttpException) {
-                Result.failure(Exception("Network error: ${e.message}"))
-            } catch (e: IOException) {
-                Result.failure(Exception("Connection error: ${e.message}"))
-            } catch (e: Exception) {
-                Result.failure(Exception("Unknown error: ${e.message}"))
-            }
-        }
-    }
 
-    suspend fun getPendingRequestsForHelper(helperId: String): Result<List<HelperUser>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = usersApi.getPendingRequestsForHelper(helperId)
-                Result.success(response.data)
-            } catch (e: HttpException) {
-                Result.failure(Exception("Network error: ${e.message}"))
-            } catch (e: IOException) {
-                Result.failure(Exception("Connection error: ${e.message}"))
-            } catch (e: Exception) {
-                Result.failure(Exception("Unknown error: ${e.message}"))
-            }
-        }
-    }
 
 
     suspend fun changePassword(request: UpdatePasswordRequest): Result<Unit> {
@@ -95,13 +67,6 @@ class UserRepository(private val context: Context) {
         }
     }
 
-    suspend fun acceptRequest(id: Int) {
-        usersApi.acceptPairingRequest(id)
-    }
-
-    suspend fun declineRequest(id: Int) {
-        usersApi.declinePairingRequest(id)
-    }
 
 
 
