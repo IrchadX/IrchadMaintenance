@@ -46,7 +46,10 @@ fun DeviceDetailsScreen(
     navController: NavController,
     viewModel: DeviceViewModel,
     authViewModel: AuthViewModel
-) {val user by authViewModel.user.collectAsState()
+) {
+    val user by authViewModel.user.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
+
     var device by remember { mutableStateOf<Device?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var showDiagnostics by remember { mutableStateOf(false) }
@@ -54,6 +57,10 @@ fun DeviceDetailsScreen(
     var isLoadingDiagnostic by remember { mutableStateOf(false) }
     val userLocation by viewModel.userLocation.collectAsState()
 
+    // Get the current user ID for WebSocket connection
+    val currentUserId = remember(authState) {
+        (authState as? AuthUIState.Authenticated)?.userId ?: ""
+    }
 
     val rotationAngle by animateFloatAsState(
         targetValue = if (showDiagnostics) 180f else 0f,
@@ -66,12 +73,28 @@ fun DeviceDetailsScreen(
             val numericId = deviceId.toIntOrNull()
             if (numericId != null) {
                 device = viewModel.loadDeviceById(numericId)
-                viewModel.startListeningForLocation()
+
+                // Start location tracking with proper parameters
+                if (currentUserId.isNotEmpty()) {
+                    // Use device owner's user ID as publisher and current user as subscriber
+                    val publisherId = device?.userId?.toString() ?: currentUserId
+                    viewModel.startListeningForLocation(
+                        userId = currentUserId,
+                        publisherId = publisherId
+                    )
+                }
             }
         } catch (e: Exception) {
             Log.e("DeviceDetailsScreen", "Failed to load device details", e)
         } finally {
             isLoading = false
+        }
+    }
+
+    // Clean up WebSocket connection when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.stopListening()
         }
     }
 
@@ -91,7 +114,7 @@ fun DeviceDetailsScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
-            user = user, // Use the authenticated user
+            user = user,
             navController = navController,
             title = "",
             default = true,
@@ -112,6 +135,7 @@ fun DeviceDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
+                // Device Image and Name Section
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -147,9 +171,9 @@ fun DeviceDetailsScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
-                Spacer(modifier = Modifier.height(54.dp))
+                Spacer(modifier = Modifier.height(78.dp))
 
+                // Real-time Location Map Section
                 if (userLocation != null) {
                     OSMDroidMap(
                         location = "Localisation du client en temps réel",
@@ -157,25 +181,32 @@ fun DeviceDetailsScreen(
                         longitude = userLocation!!.longitude
                     )
                 } else {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(216.dp)
-                        .background(Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(216.dp)
+                            .background(Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator(color = Color(0xFF3AAFA9))
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("En attente de la localisation du client...")
+                            Text(
+                                text = "En attente de la localisation du client...",
+                                color = Color(0xFF17252A)
+                            )
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(48.dp))
 
+                // Device Details Section
                 DeviceDetailsInfo(currentDevice)
 
                 Spacer(modifier = Modifier.height(48.dp))
 
+                // Diagnostic Button and Section
                 Button(
                     onClick = { showDiagnostics = !showDiagnostics },
                     colors = ButtonDefaults.buttonColors(
@@ -193,6 +224,7 @@ fun DeviceDetailsScreen(
                     )
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
+
                         contentDescription = "Expand",
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -237,14 +269,14 @@ fun DeviceDetailsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Intervention Button
                 Button(
                     onClick = {
-                        // Get the authenticated user ID
-                        val userId = (authViewModel.authState.value as? AuthUIState.Authenticated)?.userId ?: ""
+                        val userId = currentUserId
                         navController.navigate(
                             Destination.Interventions.createRoute(
                                 userId = userId,
-                                deviceId = deviceId  // Pass the deviceId from the screen parameter
+                                deviceId = deviceId
                             )
                         )
                     },

@@ -52,19 +52,17 @@ class DeviceRepository {
     private fun DeviceApiModel.toDevice(): Device {
         val activationDate = try {
             if (this.dateOfService != null) {
-
                 if (this.dateOfService is Date) {
                     val userPattern = "dd MMMM, HH:mm"
                     val userDateFormat = SimpleDateFormat(userPattern, Locale.getDefault())
                     userDateFormat.format(this.dateOfService)
                 } else {
-
                     val patterns = listOf(
                         "yyyy-MM-dd'T'HH:mm",
                         "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
                         "yyyy-MM-dd'T'HH:mm:ss'Z'",
                         "yyyy-MM-dd",
-                        "EEE MMM dd HH:mm:ss zzz yyyy" // For format like "Wed Jan 01 00:00:00 GMT+01:00 2025"
+                        "EEE MMM dd HH:mm:ss zzz yyyy"
                     )
 
                     var parsed = false
@@ -82,7 +80,7 @@ class DeviceRepository {
                                 break
                             }
                         } catch (e: Exception) {
-
+                            // Continue to next pattern
                         }
                     }
 
@@ -96,11 +94,21 @@ class DeviceRepository {
             "Unknown date"
         }
 
+        // Create user's full name from first_name and family_name
+        val userFullName = when {
+            this.user?.first_name != null && this.user?.family_name != null ->
+                "${this.user.first_name} ${this.user.family_name}"
+            this.user?.first_name != null -> this.user.first_name
+            this.user?.family_name != null -> this.user.family_name
+            else -> "Unknown User"
+        }
+
         return Device(
             id = this.id.toString(),
             name = this.deviceType?.type ?: "Unknown Device",
             status = this.stateType?.state ?: "Unknown",
-            location = "Centre Commercial Ardis, El Harrach, Alger",
+            location = "Centre Commercial Ardis, El Harrach, Alger", // Keep for backward compatibility
+            userName = userFullName, // Add the user's full name
             distance = 0f,
             type = this.deviceType?.type ?: "Unknown Type",
             userId = this.userId?.toString() ?: "",
@@ -110,7 +118,6 @@ class DeviceRepository {
             imageName = this.imageName ?: "device_default"
         )
     }
-
 
     fun mapDatabaseResultToDiagnosticModel(dbResult: DeviceDiagnosticApiModel): DeviceDiagnosticApiModel {
 

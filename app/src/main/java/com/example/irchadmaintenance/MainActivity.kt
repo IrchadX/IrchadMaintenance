@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setupWebSocket() {
-        val raspberryPiIp = "192.168.39.121"
+        val raspberryPiIp = "192.168.43.121"
         WebSocketManager.initialize(applicationContext, raspberryPiIp)
 
         WebSocketManager.connect { notification ->

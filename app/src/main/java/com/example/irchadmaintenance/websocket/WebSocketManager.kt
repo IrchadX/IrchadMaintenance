@@ -16,7 +16,7 @@ object WebSocketManager {
     private const val MAX_RECONNECT_ATTEMPTS = 5
     private const val INITIAL_RECONNECT_DELAY = 1000L // 1 second
 
-    private var serverUrl: String = "https:192.168.1.11:3000"
+    private var serverUrl: String = "https:192.168.1.1:3000"
     private var onNotificationCallback: ((Notification) -> Unit)? = null
 
     fun initialize(context: Context, serverIp: String, port: Int = 8765) {

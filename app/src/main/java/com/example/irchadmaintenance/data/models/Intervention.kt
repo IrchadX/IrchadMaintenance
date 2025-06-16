@@ -10,5 +10,7 @@ data class Intervention(
     val status: String,
     val type: String,
     val title: String?,
-    val location: String
+    val location: String,
+    val userFullName: String = "", // Add user full name
+    val deviceIdDisplay: String = ""
 )

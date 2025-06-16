@@ -30,7 +30,6 @@ class InterventionRepository {
 
     suspend fun updateIntervention(id: Int, title: String, description: String): Intervention {
         try {
-            // FIXED: Use specific DTO instead of Map
             val updateDto = UpdateInterventionDto(
                 title = title,
                 description = description
@@ -80,6 +79,7 @@ class InterventionRepository {
             throw e
         }
     }
+
     suspend fun deleteIntervention(id: Int): Boolean {
         return try {
             val response = apiService.deleteIntervention(id)
@@ -90,6 +90,7 @@ class InterventionRepository {
             throw e
         }
     }
+
     suspend fun completeIntervention(id: Int): Intervention {
         return apiService.completeIntervention(id).toIntervention()
     }
@@ -109,6 +110,21 @@ class InterventionRepository {
             ""
         }
 
+        // Extract user full name
+        val userFullName = this.user?.let { user ->
+            val firstName = user.first_name?.trim() ?: ""
+            val familyName = user.family_name?.trim() ?: ""
+            when {
+                firstName.isNotEmpty() && familyName.isNotEmpty() -> "$firstName $familyName"
+                firstName.isNotEmpty() -> firstName
+                familyName.isNotEmpty() -> familyName
+                else -> "Utilisateur inconnu"
+            }
+        } ?: "Utilisateur inconnu"
+
+        // Format device ID for display
+        val deviceIdDisplay = this.device_id?.let { "Équipement #$it" } ?: "Aucun équipement"
+
         return Intervention(
             id = this.id.toString(),
             deviceId = this.device_id?.toString(),
@@ -119,7 +135,9 @@ class InterventionRepository {
             status = this.status ?: "pending",
             type = this.type ?: "technique",
             title = this.title ?: "",
-            location = this.location ?: "ESI, Oued Smar, Alger"
+            location = this.location ?: "ESI, Oued Smar, Alger",
+            userFullName = userFullName,
+            deviceIdDisplay = deviceIdDisplay
         )
     }
 }

@@ -30,7 +30,6 @@ import com.example.irchadmaintenance.viewmodels.AuthViewModel
 import com.example.irchadmaintenance.viewmodels.DeviceViewModel
 
 import com.example.irchadmaintenance.data.models.User
-
 @Composable
 fun DevicesScreen(
     userId: String,
@@ -39,11 +38,11 @@ fun DevicesScreen(
     navController: NavController,
     viewModel: DeviceViewModel,
     authViewModel: AuthViewModel
-) {val user by authViewModel.user.collectAsState()
+) {
+    val user by authViewModel.user.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedStatus by remember { mutableStateOf<String?>(null) }
 
-    // Get the loading and error states
     val isLoading = viewModel.isLoading.value
     val error = viewModel.error.value
 
@@ -51,24 +50,22 @@ fun DevicesScreen(
         val matchesSearch = device.name.contains(searchQuery, ignoreCase = true) ||
                 device.id.contains(searchQuery, ignoreCase = true) ||
                 device.status.contains(searchQuery, ignoreCase = true) ||
-                device.location.contains(searchQuery, ignoreCase = true)
+                device.userName.contains(searchQuery, ignoreCase = true) // Add userName to search
 
         val matchesStatus = selectedStatus == null || device.status == selectedStatus
 
         matchesSearch && matchesStatus
     }
 
-    Column(modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         AppHeader(
-            user = user, // Use the authenticated user
+            user = user,
             navController = navController,
             title = "",
             default = true,
             warning = false,
             authViewModel = authViewModel
         )
-
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -85,7 +82,6 @@ fun DevicesScreen(
                 }
             }
         } else {
-            // Rest of your UI
             Spacer(modifier = Modifier.height(15.dp))
 
             Column(
@@ -112,7 +108,6 @@ fun DevicesScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Add this to show when there are no devices
             if (filteredDevices.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No devices found")

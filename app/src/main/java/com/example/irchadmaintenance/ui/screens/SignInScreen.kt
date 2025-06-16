@@ -257,32 +257,6 @@ fun SignInScreen(
                         color = Color.White
                     )
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Not registered
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Not registered ? ",
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
-                    Text(
-                        text = "Sign Up now !",
-                        color = Color.DarkGray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable {
-                            navController.navigate("signup")
-                        }
-                    )
-                }
             }
 
             // Footer

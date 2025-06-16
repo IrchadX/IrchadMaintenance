@@ -13,5 +13,6 @@ data class InterventionApiModel(
     val status: String?,
     val type: String?,
     val title: String?,
+    val user: UserApiModel?,
     val location: String?
 )

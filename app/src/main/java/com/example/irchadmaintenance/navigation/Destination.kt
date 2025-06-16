@@ -13,7 +13,7 @@ sealed class Destination(val route: String) {
     object Loading : Destination("loading")
     object Account : Destination("account")
 
-    // Main app routes
+    // Main app routesa
     object DeviceList : Destination("device_list")
 
     object DeviceDetails : Destination("device_details/{deviceId}") {

@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import com.example.irchadmaintenance.viewmodels.NotificationsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.irchadmaintenance.data.Device
-import com.example.irchadmaintenance.data.SampleData
 import com.example.irchadmaintenance.navigation.Destination
 import com.example.irchadmaintenance.state.AuthUIState
 import com.example.irchadmaintenance.ui.components.OSMDroidMap

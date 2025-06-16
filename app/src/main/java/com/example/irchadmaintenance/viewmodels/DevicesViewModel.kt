@@ -85,24 +85,35 @@ class DeviceViewModel(private val repository: DeviceRepository) : ViewModel() {
             return null
         }
     }
+
     private val _userLocation = MutableStateFlow<LatLng?>(null)
     val userLocation = _userLocation.asStateFlow()
 
     private val client = OkHttpClient()
     private var webSocket: WebSocket? = null
 
-    fun startListeningForLocation() {
+    // Modified to accept userId as parameter
+    fun startListeningForLocation(userId: String, publisherId: String) {
         if (webSocket != null) return
 
+        val subscriberId = "android_subscriber_$userId"
         val serverUrl = "wss://websocket-production-1b56.up.railway.app/"
         val request = Request.Builder().url(serverUrl).build()
 
-        val listener = LocationWebSocketListener { newLocation ->
+        val listener = LocationWebSocketListener(
+            subscriberId = subscriberId,
+            publisherId = publisherId
+        ) { newLocation ->
             _userLocation.value = newLocation
         }
 
-        Log.d("ViewModel", "Connecting to WebSocket for LIVE location updates...")
+        Log.d("ViewModel", "Connecting to WebSocket for location updates from publisher: $publisherId")
         webSocket = client.newWebSocket(request, listener)
+    }
+
+    fun stopListening() {
+        webSocket?.close(1000, "Client disconnecting")
+        webSocket = null
     }
 
     override fun onCleared() {
