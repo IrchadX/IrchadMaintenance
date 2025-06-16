@@ -2,6 +2,7 @@ package com.example.irchadmaintenance.repository
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -30,6 +31,7 @@ class AuthRepository(private val context: Context) {
         val USER_EMAIL = stringPreferencesKey("user_email")
         val USER_FAMILY_NAME = stringPreferencesKey("user_family_name")
         val USER_FIRST_NAME = stringPreferencesKey("user_first_name")
+        val USER_PHONE = stringPreferencesKey("user_phone")
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -37,6 +39,8 @@ class AuthRepository(private val context: Context) {
         try {
             val request = SignInRequest(email, password)
             val response = authApi.signIn(request)
+            Log.d("AuthRepository", "Sign in response user: ${response.user}")
+            Log.d("AuthRepository", "Phone number from response: ${response.user.phoneNumber}")
             saveAuthInfo(response.user, response.token, email) // Pass the User object
             return response
         } catch (e: HttpException) {
@@ -54,12 +58,14 @@ class AuthRepository(private val context: Context) {
 
 
     suspend fun saveAuthInfo(user: User, token: String, email: String) {
+        Log.d("AuthRepository", "Saving user info - Phone: ${user.phoneNumber}")
         context.authDataStore.edit { preferences ->
             preferences[USER_ID] = user.id.toString()
             preferences[AUTH_TOKEN] = token
             preferences[USER_EMAIL] = email
             preferences[USER_FAMILY_NAME] = user.familyName ?: ""
             preferences[USER_FIRST_NAME] = user.firstName ?: ""
+            preferences[USER_PHONE] = user.phoneNumber ?: ""
         }
     }
     fun getUserFamilyName(): Flow<String?> {
@@ -85,6 +91,14 @@ class AuthRepository(private val context: Context) {
     fun getUserEmail(): Flow<String?> {
         return context.authDataStore.data.map { preferences ->
             preferences[USER_EMAIL]
+        }
+    }
+
+    fun getUserPhone(): Flow<String?> {
+        return context.authDataStore.data.map { 
+            val phone = it[USER_PHONE]
+            Log.d("AuthRepository", "Retrieved phone from DataStore: $phone")
+            phone
         }
     }
 

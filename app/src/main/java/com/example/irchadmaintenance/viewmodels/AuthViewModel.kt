@@ -81,19 +81,20 @@ class AuthViewModel(
                         Log.d("AuthViewModel", "Token is valid: $isValid")
 
                         if (isValid) {
+                            val phoneNumber = authRepository.getUserPhone().firstOrNull()
+                            Log.d("AuthViewModel", "Retrieved phone number from DataStore: $phoneNumber")
                             // Reconstruct the User object with all available data
                             val user = User(
                                 id = userId.toIntOrNull(),
                                 familyName = familyName,
                                 firstName = firstName,
                                 email = email,
-                                // Set other fields as necessary
-                                phoneNumber = null,
+                                phoneNumber = phoneNumber,
                                 userType = null
                             )
 
                             // Log the constructed user object
-                            Log.d("AuthViewModel", "Constructed user: ${user.firstName} ${user.familyName}")
+                            Log.d("AuthViewModel", "Constructed user: ${user.firstName} ${user.familyName}, Phone: ${user.phoneNumber}")
 
                             _user.value = user
                             _authState.value = AuthUIState.Authenticated(userId)

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 
 object Client {
-    private const val BASE_URL = "http://192.168.93.216:3000"
+    private const val BASE_URL = "http://10.0.2.2:5100"
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }

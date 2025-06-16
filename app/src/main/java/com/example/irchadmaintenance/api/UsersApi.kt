@@ -17,17 +17,6 @@ interface UsersApi {
     suspend fun getUserById(
         @Path("id") userId: String
     ): User
-    @GET("aidant/UsersForHelper/{id}")
-    suspend fun getUsersForHelper(@Path("id") userId: String): UsersResponse
-
-    @GET("aidant/pending-requests/{id}")
-    suspend fun getPendingRequestsForHelper(@Path("id") userId: String): UsersResponse
-
-    @POST("aidant/acceptpairing/{id}")
-    suspend fun acceptPairingRequest(@Path("id") id: Int)
-
-    @POST("aidant/declinepairing/{id}")
-    suspend fun declinePairingRequest(@Path("id") id: Int)
 
     @PATCH("users/change-password")
     suspend fun changePassword(@Body request: UpdatePasswordRequest): Response<Unit>
