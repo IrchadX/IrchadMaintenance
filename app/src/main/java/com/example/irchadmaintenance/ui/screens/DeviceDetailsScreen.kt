@@ -48,12 +48,10 @@ fun DeviceDetailsScreen(
     val user = UserSampleData.users.find { it.userId == userId }
     var showDiagnostics by remember { mutableStateOf(false) }
 
-    //////////////////////Change 1: Get the live location state from the ViewModel ////////
     val userLocation by viewModel.userLocation.collectAsState()
 
-    /////////////////////Change 2: start listening for location /////////////////
-    LaunchedEffect(Unit) {
-        viewModel.startListeningForLocation()
+    LaunchedEffect(key1 = userId) {
+        viewModel.subscribeToUser(userId)
     }
 
     val rotationAngle by animateFloatAsState(
@@ -112,8 +110,6 @@ fun DeviceDetailsScreen(
                     )
                 }
 
-                ////////////////////////Change 3: Add the map ///////////////////////////////////
-
                 Spacer(modifier = Modifier.height(54.dp))
 
                 if (userLocation != null) {
@@ -137,8 +133,6 @@ fun DeviceDetailsScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(48.dp))
-
-                /////////////////////////////////// the rest is the same ///////////////////////
 
                 DeviceInfoList(deviceId)
                 Spacer(modifier = Modifier.height(40.dp))
