@@ -21,7 +21,8 @@ object Client {
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
-    //ttp://192.168.221.216:3000/
+    //http://10.0.2.2:5100/
+    // http://192.168.93.216:3000
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)

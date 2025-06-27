@@ -177,8 +177,8 @@ fun DeviceDetailsScreen(
                 if (userLocation != null) {
                     OSMDroidMap(
                         location = "Localisation du client en temps réel",
-                        latitude = userLocation!!.latitude,
-                        longitude = userLocation!!.longitude
+                        latitude =  userLocation!!.latitude, //36.707256
+                        longitude =  userLocation!!.longitude //3.175612
                     )
                 } else {
                     Box(
@@ -321,7 +321,7 @@ fun DeviceDetailsInfo(device: Device) {
             DeviceInfoRow("Adresse MAC", device.macAddress ?: "Non disponible")
             DeviceInfoRow("Version du logiciel", device.softwareVersion ?: "Non disponible")
             DeviceInfoRow("Date d'activation", device.activationDate)
-            DeviceInfoRow("Location", device.location)
+            //DeviceInfoRow("Location", device.location)
         }
     }
 }
